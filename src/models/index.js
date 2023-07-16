@@ -1,7 +1,7 @@
 const Collection = require('./collection');
 const Timeline = require('./timeline');
 const User = require('./user');
-const CollectionMapping = require('./CollectionMapping');
+const CollectionMapping = require('./collectionMapping');
 
 
 module.exports = {
