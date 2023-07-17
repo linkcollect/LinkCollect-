@@ -5,7 +5,7 @@ exports.isCollectionOwner = async (req, res, next) => {
   // console.log(collectionId);
   try {
     const { userId } = await Collection.findById(collectionId);
-    if (req.userId !== userId) {
+    if (req.userId.toString() !== userId.toString()) {
       return res.status(400).json({
         success: false,
         message: "You cannot edit, read, or add to this collection",
