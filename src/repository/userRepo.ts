@@ -1,16 +1,19 @@
 import User from "../models/user";
 import Email from "../utils/sendEmail";
 import { Collection } from "../models/index";
+// import prisma
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 // import CollectionRepo from "./collectionRepo";
 class UserRepository {
   async create(data) {
     try {
-      // console.log("3", 3);
 
-      // const collection: any = await Collection.create({ title: "Untitled Private Collection 🔥", description: "you  can create many such collection using linkcollect, and share them across devices and friends. You can edit everything about this collections easily", isPublic: false});
-      // console.log("collection", collection, data.collections)
 
-      const user = await User.create(data);
+      // const user = await User.create(data);
+      // convert to prisma 
+      const user = await prisma.user.create(data);
+
       Email.verifyEmail(user.name, user.email, user.emailToken);
       // await user.save();
 
@@ -31,10 +34,10 @@ class UserRepository {
           username: user.username
         }); */
 
-
-
       // user.collections.push(collection); 
-      await user.save();
+
+
+      // await user.save();
       return user;
       
     } catch (error) {
