@@ -189,7 +189,7 @@ const togglePrivacy = async (req: AuthenticatedRequest, res: Response) => {
 const togglePin = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const collection = await collectionService.togglePin(req.params.id);
-    const isPublic = collection.isPinned.val ? "Pinned" : "Unpinnned";
+    const isPublic = collection.pinDetails?.isPinned ? "Pinned" : "Unpinnned";
 
     return res.status(201).json({
       success: true,

@@ -1,5 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import CollectionModel from "../models/collection";
+import { Request, Response, NextFunction } from 'express';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 interface AuthenticatedRequest extends Request {
   userId?: string;
@@ -12,19 +14,22 @@ export const isCollectionOwner = async (
 ): Promise<void> => {
   const collectionId = req.params.id;
   try {
-    const collection = await CollectionModel.findById(collectionId);
+    const collection = await prisma.collection.findUnique({
+      where: { id: collectionId },
+    });
+
     if (!collection) {
       res.status(404).json({
         success: false,
-        message: "Collection not found",
-        err: "Invalid collection ID",
+        message: 'Collection not found',
+        err: 'Invalid collection ID',
         data: {},
       });
     } else if (req.userId !== collection.userId.toString()) {
       res.status(400).json({
         success: false,
-        message: "You cannot edit, read, or add to this collection",
-        err: "Unauthorized to perform this action",
+        message: 'You cannot edit, read, or add to this collection',
+        err: 'Unauthorized to perform this action',
         data: {},
       });
     } else {
@@ -34,8 +39,8 @@ export const isCollectionOwner = async (
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error",
-      err: "Error retrieving collection",
+      message: 'Internal Server Error',
+      err: 'Error retrieving collection',
       data: {},
     });
   }
@@ -48,12 +53,15 @@ export const isCollectionPublic = async (
 ): Promise<void> => {
   const collectionId = req.params.id;
   try {
-    const collection = await CollectionModel.findById(collectionId);
+    const collection = await prisma.collection.findUnique({
+      where: { id: collectionId },
+    });
+
     if (!collection) {
       res.status(404).json({
         success: false,
-        message: "Collection not found",
-        err: "Invalid collection ID",
+        message: 'Collection not found',
+        err: 'Invalid collection ID',
         data: {},
       });
     } else if (
@@ -63,7 +71,7 @@ export const isCollectionPublic = async (
       res.status(400).json({
         success: false,
         message: "The collection you're trying to access is private",
-        err: "Unauthorized to perform this action",
+        err: 'Unauthorized to perform this action',
         data: {},
       });
     } else {
@@ -73,8 +81,8 @@ export const isCollectionPublic = async (
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error",
-      err: "Error retrieving collection",
+      message: 'Internal Server Error',
+      err: 'Error retrieving collection',
       data: {},
     });
   }

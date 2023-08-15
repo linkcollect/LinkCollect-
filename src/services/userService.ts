@@ -2,6 +2,7 @@ import UserRepository from "../repository/userRepo";
 import config from "../config/index";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import env from "../config/index";
 import randomBytes from "randombytes";
 import mongoose, { isValidObjectId } from "mongoose";
 
@@ -15,6 +16,8 @@ class UserService {
       data.username = data.email.split("@")[0];
       data.emailToken = randomBytes(32).toString("hex");
       data.verified = 0;
+      const encryptedPassword = bcrypt.hashSync(data.password, Number(env.SALT));
+      data.password = encryptedPassword;
 
       if (data.username && data.username.length < 3) {
         data.username = data.username + randomBytes(3).toString("hex"); // to make username unique and not too long add 2 randome numbers and two chars
@@ -29,17 +32,15 @@ class UserService {
         }
       }
 
-     
-
-      if (data.social && data.social.length != 0) {
-        let socialData = data.social;
-        let social: Array<{ [key: string]: string }> = [];
-        socialData.forEach((url) => {
-          let companyName = this.extractCompanyName(url);
-          social.push({ [companyName]: url });
-        });
-        data.social = social;
-      }
+      // if (data.social && data.social.length != 0) {
+      //   let socialData = data.social;
+      //   let social: Array<{ [key: string]: string }> = [];
+      //   socialData.forEach((url) => {
+      //     let companyName = this.extractCompanyName(url);
+      //     social.push({ [companyName]: url });
+      //   });
+      //   data.social = social;
+      // }
       const user = await this.userRepository.create(data);
       return user;
     } catch (error) {
@@ -157,20 +158,24 @@ class UserService {
         encryptedPassword
       );
 
+      console.log(user, encryptedPassword, plainPassword,passwordMatch)
+
       if (!passwordMatch) {
         console.log("Password doesn't match");
         throw { error: "Incorrect password" };
       }
       const newJWTtoken = this.createToken({
-        userId: user._id,
+        userId: user.id,
         username: user.username,
       });
       // console.log("->", user, user._doc)
-      const { password, ...userData } = user._doc;
+      // const { password, ...userData } = user._doc;
 
-      return { userId: user._id, token: newJWTtoken, userData: userData };
+      const userData = await this.getByUsername(user.username,user.id);
+
+      return { userId: user.id, token: newJWTtoken, userData: userData };
     } catch (error) {
-      console.log("Something went wrong in signIn process");
+      console.log("Something went wrong in signIn process", error);
       throw error;
     }
   }
@@ -252,16 +257,17 @@ class UserService {
   async getByUsername(username, userId) {
     try {
       console.log(username, userId);
-      const validUserId = mongoose.isValidObjectId(userId);
-      if (!validUserId) {
-        console.log("userService.getByUsername says userid its null");
-      }
-      if (validUserId) {
+      // const validUserId = mongoose.isValidObjectId(userId);
+      // if (!validUserId) {
+      //   console.log("userService.getByUsername says userid is null");
+      // }
+      // if (validUserId) {
         const user = await this.userRepository.getByUserId(userId);
+        if(!user) {
+          throw "invalid userid"
+        }
         var isSameUser = user.username === username;
-      } else {
-        isSameUser = false;
-      }
+
       const response = await this.userRepository.getByUsername(username);
       delete response.password;
       delete response.emailToken;

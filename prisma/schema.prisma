@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DBURL")
 }
 
@@ -13,6 +13,7 @@ model User {
   email            String             @unique
   username         String             @unique
   profilePic       String?
+  bio              String?
   password         String?
   isPremium        Boolean            @default(false)
   isPublic         Boolean            @default(true)
@@ -20,6 +21,7 @@ model User {
   verified         Int?
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  socials          String[]           @default([])
   collections      Collection[]       @relation("CreatedCollections")
   savedCollections Collection[]       @relation("SavedCollections")
   CollectionUpvote CollectionUpvote[]
@@ -37,20 +39,20 @@ model Collection {
   image             String?
   description       String?
   isPublic          Boolean            @default(false)
-  tags              String[]
+  tags              String[]           @default([])
   views             Int?
   timelines         Bookmarks[]
   upvotes           CollectionUpvote[]
-  pin               PinDetails?
+  pinDetails        PinDetails?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
 
-model CollectionMapping {
-  id           String  @id @default(cuid()) @map("_id")
-  collectionId String  @unique
-  isDeleted    Boolean @default(false)
-}
+// model CollectionMapping {
+//   id           String  @id @default(cuid()) @map("_id")
+//   collectionId String  @unique
+//   isDeleted    Boolean @default(false)
+// }
 
 model Bookmarks {
   id           String      @id @default(cuid()) @map("_id")
@@ -72,6 +74,9 @@ model CollectionUpvote {
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   collectionId String
   createdAt    DateTime   @default(now())
+
+   @@unique([userId, collectionId]) // Add a unique constraint to prevent multiple upvotes from the same user on the same collection
+
 }
 
 model PinDetails {
@@ -90,5 +95,5 @@ model PinDetails {
 //   FreemiumUser
 //   PremiumUser
 //   SuperUser
-//   Admin
+//   Admin 
 // } 

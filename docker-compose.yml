@@ -2,55 +2,59 @@
 version: '3.9'
 
 services:
-    ts-node-docker:
-        container_name: ts-node-docker
+    # ts-node-docker:
+    #     container_name: ts-node-docker
+    #     build:
+    #         context: .
+    #         dockerfile: ./images/nodejs.dockerfile
+    #         target: base
+    #     volumes:
+    #     - ./src:/app/src
+    #     - ./nodemon.json:/app/nodemon.json
+    #     ports:
+    #         - "3000:3000" 
+    #     networks:
+    #         - example-net
+    #     depends_on:
+    #         - postgres
+    #     # command: npm run dev
+    postgres:
+        container_name: postgres
+        restart: always
         build:
             context: .
-            dockerfile: ./images/nodejs.dockerfile
+            dockerfile: ./images/postgres.dockerfile
             target: base
         volumes:
-        - ./src:/app/src
-        - ./nodemon.json:/app/nodemon.json
+            - ./postgres:/data/db
         ports:
-            - "3000:3000" 
-        networks:
-            - example-net
-        depends_on:
-            - mongo
-        command: npm run dev
-    mongo:
-        container_name: mongo
-        build:
-            context: .
-            dockerfile: ./images/mongo.dockerfile
-            target: base
-        volumes:
-            - ./mongo:/data/db
-        ports:
-            - "27017:27017" 
+            - "5433:5432" 
         networks:
             - example-net 
+        environment:
+            POSTGRES_PASSWORD: mysecretpassword
+            POSTGRES_DB: linkcollect
         # environment:
             # - MONGO_INITDB_ROOT_USERNAME=harshlinkcollect01
             # - MONGO_INITDB_ROOT_PASSWORD=harshlinkcollect01
             # - MONGO_INITDB_DATABASE=linkcollect
-    nginx:
-        build:
-            context: .
-            dockerfile: ./images/nginx.dockerfile
-            target: base
-        container_name: nginx
-        hostname: nginx
-        ports:
-            - "80:80" 
-        depends_on:
-            - ts-node-docker
-        networks:
-            - example-net
+    # nginx:
+    #     build:
+    #         context: .
+    #         dockerfile: ./images/nginx.dockerfile
+    #         target: base
+    #     container_name: nginx
+    #     hostname: nginx
+    #     ports:
+    #         - "80:80" 
+    #     depends_on:
+    #         - ts-node-docker
+    #     networks:
+    #         - example-net
 
 networks:
   example-net:
     external: true
 
 volumes:
-    mongo: {}
+    postgres: {}

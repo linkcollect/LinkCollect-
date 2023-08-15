@@ -7,7 +7,7 @@ import catchAsync from "../../utils/catchAsync";
 
 import checkSpecialCharacters from "../../middlewares/checkSpecialCharacters";
 import { validateUserAuthforSignIn, validateUserAuthforSignUp, userExist } from "../../middlewares/validateRequests";
-import isOwner from '../../middlewares/isOwner';
+// import isOwner from '../../middlewares/isOwner';
 import multer from "multer";
 const upload = multer();
 
@@ -39,20 +39,6 @@ router.get("/isauthenticated", UserControllers.isAuthenticated);
 
 // Google auth route for both signup and signin
 router.get("/google-auth", catchAsync(googleAuth));
-
-
-
-/*
-Params
-
-  "list": [
-    {
-      "username": "username1",
-     "premium": true
-    }, ...
- 
-  ]
-*/
 
 router.get("/setPremium", UserControllers.setPremium);
 

@@ -1,21 +1,26 @@
-import { Collection } from "../models";
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export const checkDuplicateLink = async (req, res, next) => {
   try {
     const { id: collectionId } = req.params;
     const { link } = req.body;
-    const collection = await Collection.findById(collectionId).populate(
-      "timelines"
-    );
+
+    const collection = await prisma.collection.findUnique({
+      where: { id: collectionId },
+      include: { timelines: true },
+    });
+
     const existingLink = collection?.timelines.find(
-      (timeline: any) => timeline.link === link
+      (timeline) => timeline.link === link
     );
 
     if (existingLink) {
       return res.status(400).json({
         success: false,
-        message: "Link already exists",
-        err: "Link already exists",
+        message: 'Link already exists',
+        err: 'Link already exists',
         data: {},
       });
     }
@@ -24,8 +29,8 @@ export const checkDuplicateLink = async (req, res, next) => {
     console.error(error);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
-      err: "Error checking duplicate link",
+      message: 'Internal Server Error',
+      err: 'Error checking duplicate link',
       data: {},
     });
   }
