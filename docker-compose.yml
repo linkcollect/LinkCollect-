@@ -26,7 +26,7 @@ services:
             dockerfile: ./images/postgres.dockerfile
             target: base
         volumes:
-            - ./postgres:/data/db
+            - ./postgres:/var/lib/postgresql/data # Specify the mount path
         ports:
             - "5433:5432" 
         networks:

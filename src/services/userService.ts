@@ -158,8 +158,6 @@ class UserService {
         encryptedPassword
       );
 
-      console.log(user, encryptedPassword, plainPassword,passwordMatch)
-
       if (!passwordMatch) {
         console.log("Password doesn't match");
         throw { error: "Incorrect password" };

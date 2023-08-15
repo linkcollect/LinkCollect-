@@ -16,24 +16,24 @@ services:
         networks:
             - example-net
         depends_on:
-            - mongo
+            - postgres
         command: npm run dev
-    mongo:
-        container_name: mongo
+    postgres:
+        container_name: postgres
+        restart: always
         build:
             context: .
-            dockerfile: ./images/mongo.dockerfile
+            dockerfile: ./images/postgres.dockerfile
             target: base
         volumes:
-            - ./mongo:/data/db
+            - ./PGDATA=/var/lib/postgresql/data/pgdata
         ports:
-            - "27017:27017" 
+            - "5433:5432" 
         networks:
             - example-net 
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=harshlinkcollect01
-            - MONGO_INITDB_ROOT_PASSWORD=harshlinkcollect01
-            - MONGO_INITDB_DATABASE=linkcollect
+            POSTGRES_PASSWORD: mysecretpassword
+            POSTGRES_DB: linkcollect
     nginx:
         build:
             context: .
@@ -53,4 +53,4 @@ networks:
     external: true
 
 volumes:
-    mongo: {}
+    postgres: {}

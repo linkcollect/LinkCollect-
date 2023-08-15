@@ -5,6 +5,7 @@ up:
 	make down
 	-make rmi
 	docker-compose up -d --build
+	# npx prisma migrate dev --name init
 	docker-compose logs --follow
 
 up-dev: 
