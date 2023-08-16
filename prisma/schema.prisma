@@ -41,7 +41,7 @@ model Collection {
   isPublic          Boolean            @default(false)
   tags              String[]           @default([])
   views             Int?
-  timelines         Bookmarks[]
+  timelines         timeline[]
   upvotes           CollectionUpvote[]
   pinDetails        PinDetails?
   createdAt         DateTime           @default(now())
@@ -54,7 +54,7 @@ model Collection {
 //   isDeleted    Boolean @default(false)
 // }
 
-model Bookmarks {
+model timeline {
   id           String      @id @default(cuid()) @map("_id")
   collection   Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   collectionId String
@@ -64,7 +64,7 @@ model Bookmarks {
   favicon      String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  PinDetails   PinDetails?
+  pinDetails   PinDetails?
 }
 
 model CollectionUpvote {
@@ -86,7 +86,7 @@ model PinDetails {
   collectionId String?     @unique
   collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   bookmarkId   String?     @unique
-  bookmark     Bookmarks?  @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
+  bookmark     timeline?  @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
 }
 
 
