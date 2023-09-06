@@ -5,7 +5,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(example.org dev.example.org)
+domains=(backup.linkcollect.io)
 rsa_key_size=4096
 data_path="./images/configs/certbot"
 email="harshsingh.eth@gmail.com" # Adding a valid address is strongly recommended

@@ -95,4 +95,9 @@ router.get("/page/explore", collectionController.getExplorePage);
 // Search in Explore page or global search
 router.get("/explore/search", collectionController.searchInExplorePage);
 
+
+// duplicate someone's collection , using collection id
+router.post("/:id/duplicate", collectionController.duplicateCollection);
+
+
 export default router;

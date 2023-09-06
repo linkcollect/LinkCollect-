@@ -9,6 +9,7 @@ interface ICollection extends Document {
   pinnedTime?: Date;
   upvotes: mongoose.Schema.Types.ObjectId[];
   saves: mongoose.Schema.Types.ObjectId[];
+  isDuplicate: any;
   userId: mongoose.Schema.Types.ObjectId;
   username: string;
   tags: string[];
@@ -36,6 +37,17 @@ const CollectionSchema: Schema<ICollection> = new Schema(
     isPinned: {
       type: Boolean,
       default: false
+    },
+    isDuplicate: {
+      val: {
+        type: Boolean,
+        default: false
+      },
+      originalId: 
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Users",
+        },
     },
     pinnedTime: {
       type: Date,
