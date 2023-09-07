@@ -33,10 +33,19 @@ class CollectionService {
       throw error;
     }
   };
-
+  
   getSavedCollections = async (userId) => {
     try {
       const collection = await this.collectionRepo.getSavedCollections(userId);
+      return collection;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
+  duplicateCollection = async (collectionId, userId) => {
+    try {
+      const collection = await this.collectionRepo.duplicateCollection(collectionId, userId);
       return collection;
     } catch (error) {
       throw error;

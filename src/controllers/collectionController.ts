@@ -107,6 +107,26 @@ const getSavedCollections = async (
   }
 };
 
+const duplicateCollection = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const collection = await collectionService.duplicateCollection(req.params.id, req.userId);
+
+    return res.status(201).json({
+      data: collection,
+      success: true,
+      message: "Successfully saved the Collection",
+      err: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      data: {},
+      success: false,
+      message: "Not able to save Collections",
+      err: error,
+    });
+  }
+};
+
 const getExplorePage = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { page = 1, pageSize = 200, tags, sortBy = 'upvotes' } = req.query;
@@ -457,7 +477,8 @@ const collectionController = {
   getTags,
   getExplorePage,
   togglePin,
-  searchInExplorePage
+  searchInExplorePage,
+  duplicateCollection
 };
 
 export default collectionController;

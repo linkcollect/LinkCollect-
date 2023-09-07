@@ -123,6 +123,44 @@ class CollectionRepo {
     }
   };
 
+
+  duplicateCollection = async (collectionId: string, userId: string) => {
+  try {
+      const collection: any = await Collection.findById(collectionId);
+      const user: any = await User.findById(userId);
+
+      if (!user) {
+        throw new Error("User ID is not a Valid ID");
+      }
+
+        // Create a new duplicated collection based on the original
+      const duplicatedCollection = {
+      title: collection.title,
+      description: collection.description,
+      userId: user._id, // Set the new owner
+      tags: collection.tags, // Copy tags
+      timelines: collection.timelines,
+      username: user.username,
+      isPublic: false, // Ensure isPublic is always false
+      isDuplicate: {
+        val: true, 
+        originalId: collection._id
+       }
+      };
+
+      // create collection for the user
+      let collectionDuplicated = await this.create(duplicatedCollection);
+
+      return collectionDuplicated;
+    } catch (error) {
+      console.log(
+        "Something went wrong at repository layer while saving collection",
+        error
+      );
+      throw error;
+    }
+  };
+
   getExplorePage = async (pageSize: any, page: any, tags: any, sortBy: string) => {
     try {
       let SortBy = 'upvotes'

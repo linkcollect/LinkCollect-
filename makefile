@@ -29,3 +29,6 @@ rmi:
 
 rmiall: 
 	docker rmi -f $$(docker images -q)
+
+im-clean:
+	docker rmi $$(docker images -f "dangling=true" -q)
