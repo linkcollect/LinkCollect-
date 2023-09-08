@@ -64,6 +64,10 @@ class CollectionRepo {
 
       // save logic
       user.savedCollections.push(collectionId.toString());
+      // if saves doens't exist create it
+      if (!collection.saves) {
+        collection.saves = [];
+      }
       await collection.saves.addToSet(userId); // add to set to avoid duplicates
 
       await user.save();
@@ -147,6 +151,7 @@ class CollectionRepo {
       const duplicatedCollection = {
         title: collection.title,
         description: collection.description,
+        image: collection.image,
         userId: user._id, // Set the new owner
         tags: collection.tags, // Copy tags
         username: user.username,
