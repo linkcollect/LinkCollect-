@@ -1,10 +1,24 @@
-import { Collection, User, Timeline, deletedCollections, ExplorePage, SearchHistory } from "../models/index";
+import {
+  Collection,
+  User,
+  Timeline,
+  deletedCollections,
+  ExplorePage,
+  SearchHistory,
+} from "../models/index";
 // import { Collection, User, Timeline } from "../models/index";
 import tags from "../constants/alltags";
 import Emit from "../events/events";
+import TimelineRepo from "./timelineRepo";
 
 let emit = new Emit();
 class CollectionRepo {
+  timelineRepo: TimelineRepo;
+
+  constructor() {
+    this.timelineRepo = new TimelineRepo();
+  }
+
   create = async (data) => {
     try {
       if (
@@ -37,7 +51,6 @@ class CollectionRepo {
     }
   };
 
-
   save = async (collectionId: string, userId: string) => {
     try {
       const collection: any = await Collection.findById(collectionId);
@@ -48,11 +61,10 @@ class CollectionRepo {
           throw "You have reached your limit of saved collections";
         }
       }
-      
+
       // save logic
       user.savedCollections.push(collectionId.toString());
       await collection.saves.addToSet(userId); // add to set to avoid duplicates
-
 
       await user.save();
       await collection.save();
@@ -105,14 +117,13 @@ class CollectionRepo {
         const collection: any = await Collection.findById(collectId);
 
         if (!collection) {
-          this.unsave(collectId, userId)
-       
+          this.unsave(collectId, userId);
         } else {
           allCollections.push(collection);
         }
       }
-      // reverse and return 
-      allCollections = allCollections.reverse()
+      // reverse and return
+      allCollections = allCollections.reverse();
       return allCollections;
     } catch (error) {
       console.log(
@@ -123,9 +134,8 @@ class CollectionRepo {
     }
   };
 
-
   duplicateCollection = async (collectionId: string, userId: string) => {
-  try {
+    try {
       const collection: any = await Collection.findById(collectionId);
       const user: any = await User.findById(userId);
 
@@ -133,23 +143,54 @@ class CollectionRepo {
         throw new Error("User ID is not a Valid ID");
       }
 
-        // Create a new duplicated collection based on the original
+      // Create a new duplicated collection based on the original
       const duplicatedCollection = {
-      title: collection.title,
-      description: collection.description,
-      userId: user._id, // Set the new owner
-      tags: collection.tags, // Copy tags
-      timelines: collection.timelines,
-      username: user.username,
-      isPublic: false, // Ensure isPublic is always false
-      isDuplicate: {
-        val: true, 
-        originalId: collection._id
-       }
+        title: collection.title,
+        description: collection.description,
+        userId: user._id, // Set the new owner
+        tags: collection.tags, // Copy tags
+        username: user.username,
+        isPublic: false, // Ensure isPublic is always false
+        isDuplicate: {
+          val: true,
+          originalId: collection._id,
+        },
       };
 
       // create collection for the user
       let collectionDuplicated = await this.create(duplicatedCollection);
+      let timelinesArray: any = [];
+      // duplicate all timelins
+      const timelines = collection.timelines;
+      for (let i = 0; i < timelines.length; i++) {
+        const timeline = timelines[i];
+        // get each timeline and duplicate it
+        const timelineData: any = await this.timelineRepo.get(timeline._id);
+
+        if (!timelineData) {
+          continue;
+        }
+
+        const newTimeline = {
+          collectionId: collectionDuplicated._id,
+          title: timelineData.title,
+          link: timelineData.link,
+          note: timelineData.note ? timeline.note : null,
+          favicon: timelineData.favicon,
+          isPinned: timelineData.isPinned,
+          pinnedTime: timelineData.pinnedTime,
+        };
+
+        timelinesArray.push(newTimeline);
+      }
+      // add timelines to collection using createMultipleTimelines
+
+
+      await this.timelineRepo.createMultipleTimelines(
+        timelinesArray,
+        collectionDuplicated._id.toString()
+      );
+
 
       return collectionDuplicated;
     } catch (error) {
@@ -161,53 +202,61 @@ class CollectionRepo {
     }
   };
 
-  getExplorePage = async (pageSize: any, page: any, tags: any, sortBy: string) => {
+  getExplorePage = async (
+    pageSize: any,
+    page: any,
+    tags: any,
+    sortBy: string
+  ) => {
     try {
-      let SortBy = 'upvotes'
-      if(sortBy.length > 0 && (sortBy === 'createdAt' || sortBy === 'upvotes' || sortBy === 'views' )) {
-        SortBy = sortBy
+      let SortBy = "upvotes";
+      if (
+        sortBy.length > 0 &&
+        (sortBy === "createdAt" || sortBy === "upvotes" || sortBy === "views")
+      ) {
+        SortBy = sortBy;
       }
-         // Define the sort stage based on the selected sort field
-        let sortStage: any = {
+      // Define the sort stage based on the selected sort field
+      let sortStage: any = {
+        $sort: {
+          countOfUpvotes: -1,
+          views: -1,
+          countOfLinks: -1,
+        },
+      };
+
+      if (SortBy === "upvotes") {
+        sortStage = {
           $sort: {
             countOfUpvotes: -1,
             views: -1,
             countOfLinks: -1,
           },
-        };;
-
-          if (SortBy === 'upvotes') {
-            sortStage = {
-              $sort: {
-                countOfUpvotes: -1,
-                views: -1,
-                countOfLinks: -1,
-              },
-            };
-          } else if (SortBy === 'createdAt') {
-            sortStage = {
-              $sort: {
-                createdAt: -1,
-                upvotes: -1,
-                countOfLinks: -1,
-                views: -1,
-              },
-            };
-          } else if (SortBy === 'views') {
-            sortStage = {
-              $sort: {
-                views: -1,
-                upvotes: -1,
-                countOfLinks: -1,
-              },
-            };
-          }
+        };
+      } else if (SortBy === "createdAt") {
+        sortStage = {
+          $sort: {
+            createdAt: -1,
+            upvotes: -1,
+            countOfLinks: -1,
+            views: -1,
+          },
+        };
+      } else if (SortBy === "views") {
+        sortStage = {
+          $sort: {
+            views: -1,
+            upvotes: -1,
+            countOfLinks: -1,
+          },
+        };
+      }
 
       let tagQuery = {};
       let tagsArray;
       let isTagFilter = false;
       if (tags) {
-        console.log(typeof tags)
+        console.log(typeof tags);
         tagsArray = Array.isArray(tags) ? tags : [tags];
         tagQuery = { tags: { $in: tagsArray } };
         isTagFilter = true;
@@ -272,13 +321,14 @@ class CollectionRepo {
 
         return collections;
       } else {
-  
         let query = {
           isPublic: true,
         };
         const excludedTitles = ["Tabs Session", "Sex", "Porn", "sexy", "porn"]; // Add more titles to be excluded here
 
-        const excludedTitleRegex = excludedTitles.map(title => new RegExp(title, 'i'));
+        const excludedTitleRegex = excludedTitles.map(
+          (title) => new RegExp(title, "i")
+        );
 
         const collections = await Collection.aggregate([
           { $match: query },
@@ -292,7 +342,7 @@ class CollectionRepo {
           {
             $match: {
               countOfLinks: { $gt: 0 }, // Exclude collections with no timelines
-              title: { $not: { $in: excludedTitleRegex } } // Exclude specified titles
+              title: { $not: { $in: excludedTitleRegex } }, // Exclude specified titles
             },
           },
           {
@@ -311,7 +361,7 @@ class CollectionRepo {
               createdAt: 1,
             },
           },
-           sortStage,
+          sortStage,
           { $skip: (parseInt(page) - 1) * parseInt(pageSize) },
           { $limit: parseInt(pageSize) },
         ]);
@@ -334,7 +384,7 @@ class CollectionRepo {
 
       // find search term in search history
       const searchK = await SearchHistory.findOne({ keyword: queryFor });
-      if(searchK) {
+      if (searchK) {
         searchK.count += 1;
         await searchK.save();
       } else {
@@ -620,14 +670,15 @@ class CollectionRepo {
         tags: collection.tags,
         views: collection.views,
         timelines: collection.timelines,
-      }
-      const deletedCollection = await deletedCollections.create(importantCollectionData);
+      };
+      const deletedCollection = await deletedCollections.create(
+        importantCollectionData
+      );
       return deletedCollection;
     } catch (error) {
       console.log("Something went wrong at collection repository layer", error);
       throw error;
     }
-
   }
 
   async checkForExplorePageData() {
@@ -644,7 +695,7 @@ class CollectionRepo {
         },
         {
           $addFields: {
-            "collections1": {
+            collections1: {
               $map: {
                 input: "$collections1",
                 as: "collection",
@@ -652,28 +703,25 @@ class CollectionRepo {
                   $mergeObjects: [
                     "$$collection",
                     { countOfLinks: { $size: "$$collection.timelines" } },
-                    { countOfUpvotes: { $size: "$$collection.upvotes" } }
-                  ]
-                }
-              }
-            }
-          }
+                    { countOfUpvotes: { $size: "$$collection.upvotes" } },
+                  ],
+                },
+              },
+            },
+          },
         },
         {
           $project: {
             "collections1.timelines": 0, // Exclude the timelines array
-          }
+          },
         },
         // Other pipeline stages
       ]);
-    
-      
-        return populatedExplorePage[0].collections1;
-    } catch (error) {
 
+      return populatedExplorePage[0].collections1;
+    } catch (error) {
       // console.log(error)
-      return null
-      
+      return null;
     }
   }
 
