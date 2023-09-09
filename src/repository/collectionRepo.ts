@@ -64,6 +64,10 @@ class CollectionRepo {
 
       // save logic
       user.savedCollections.push(collectionId.toString());
+      // if saves doens't exist create it
+      if (!collection.saves) {
+        collection.saves = [];
+      }
       await collection.saves.addToSet(userId); // add to set to avoid duplicates
 
       await user.save();
@@ -147,6 +151,7 @@ class CollectionRepo {
       const duplicatedCollection = {
         title: collection.title,
         description: collection.description,
+        image: collection.image,
         userId: user._id, // Set the new owner
         tags: collection.tags, // Copy tags
         username: user.username,
@@ -378,10 +383,9 @@ class CollectionRepo {
 
   searchInExplorePage = async (queryFor, page, pageSize) => {
     try {
-      if (queryFor.length < 3) {
-        throw "search term should be at least 3 characters long";
+      if (queryFor.length < 2 || queryFor.length > 60) {
+        throw "search term should be at least 2 characters long";
       }
-
       // find search term in search history
       const searchK = await SearchHistory.findOne({ keyword: queryFor });
       if (searchK) {
@@ -390,6 +394,51 @@ class CollectionRepo {
       } else {
         await SearchHistory.create({ keyword: queryFor, count: 1 });
       }
+      // Create a Set to store unique results
+
+      let collections: any = [];
+
+      // first search for complete word, match the results.
+       let results = await this.searchForAWord(queryFor, page, pageSize);
+       results.forEach((item) => collections.push(item));
+
+      // now search for each word in the query
+      // Split the query into individual words
+       const words = queryFor.split(/\s+/);
+
+        if(words.length > 1) {
+          for (const word of words) {
+
+            let result = await this.searchForAWord(word, page, pageSize);
+            let filter = result.filter((item) => this.isNotDuplicate(collections, item));
+            // Merge the results into uniqueCollections without duplicates
+            collections.push(...filter);
+    
+          }
+        }
+
+      return collections;
+    } catch (error) {
+      console.log(
+        "Err in repository layer getting searched collection failed",
+        error
+      );
+      throw error;
+    }
+  };
+
+  // Helper function to check for duplicate items in an array
+ isNotDuplicate = (arr: any, item: any) =>{ 
+  for (const elem of arr) {
+    if (elem._id.toString() === item._id.toString()) {
+      return false; // Duplicate found
+    }
+  }
+  return true; // No duplicate found
+ }
+
+  searchForAWord = async (queryFor, page, pageSize) => {
+    try {
       // Create a regex pattern for the search term
       const regexPattern = new RegExp(queryFor, "i");
 
@@ -400,6 +449,7 @@ class CollectionRepo {
             $or: [
               { title: { $regex: regexPattern } }, // Case-insensitive search in title
               { tags: { $elemMatch: { $regex: regexPattern } } }, // Case-insensitive search in tags array
+              { description: { $regex: regexPattern } }, // Case-insensitive search in description
               { username: { $regex: regexPattern } }, // Case-insensitive search in username
             ],
           },
@@ -419,11 +469,16 @@ class CollectionRepo {
                   }, // If title matches, sortOrder = 1
                   {
                     case: {
-                      $regexMatch: { input: "$username", regex: regexPattern },
+                      $regexMatch: { input: "$description", regex: regexPattern },
                     },
                     then: 2,
-                  }, // If username matches,sortOrder = 2
-                  // { case: { $regexMatch: { input: "$tags", regex: regexPattern } }, then: 3 },  // If tags match, sortOrder = 3
+                  }, // If title matches, sortOrder = 1
+                  {
+                    case: {
+                      $regexMatch: { input: "$username", regex: regexPattern },
+                    },
+                    then: 3,
+                  },      
                 ],
                 default: 4, // If no match, sortOrder = 4 (higher value to be at the bottom)
               },
@@ -448,7 +503,6 @@ class CollectionRepo {
         { $skip: (page - 1) * parseInt(pageSize) }, // Skip documents based on page number
         { $limit: parseInt(pageSize) }, // Limit the number of documents per page
       ]).exec();
-
       return collections;
     } catch (error) {
       console.log(
