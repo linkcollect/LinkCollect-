@@ -383,8 +383,8 @@ class CollectionRepo {
 
   searchInExplorePage = async (queryFor, page, pageSize) => {
     try {
-      if (queryFor.length < 3) {
-        throw "search term should be at least 3 characters long";
+      if (queryFor.length < 2 || queryFor.length > 60) {
+        throw "search term should be at least 2 characters long";
       }
 
       // find search term in search history
@@ -396,6 +396,41 @@ class CollectionRepo {
         await SearchHistory.create({ keyword: queryFor, count: 1 });
       }
       // Create a regex pattern for the search term
+      // const regexPattern = new RegExp(queryFor, "i");
+
+       // Create a Set to store unique results
+       const uniqueCollections = new Set();
+       let collections: any = [];
+ 
+       // divide the sentence in an array of words
+       // Split the query into individual words
+       const words = queryFor.split(/\s+/);
+ 
+       for (const word of words) {
+         let result = await this.searchForAWord(word, page, pageSize);
+ 
+         // add the result to the collections array
+         result.forEach((item) => uniqueCollections.add(item));
+         collections = collections.concat(result);
+         // Deduplicate and sort the combined results
+       }
+ 
+       collections = Array.from(uniqueCollections);
+
+
+      return collections;
+    } catch (error) {
+      console.log(
+        "Err in repository layer getting saved collection failed",
+        error
+      );
+      throw error;
+    }
+  };
+
+  searchForAWord = async (queryFor, page, pageSize) => {
+    try {
+      // Create a regex pattern for the search term
       const regexPattern = new RegExp(queryFor, "i");
 
       const collections = await Collection.aggregate([
@@ -405,6 +440,7 @@ class CollectionRepo {
             $or: [
               { title: { $regex: regexPattern } }, // Case-insensitive search in title
               { tags: { $elemMatch: { $regex: regexPattern } } }, // Case-insensitive search in tags array
+              { description: { $regex: regexPattern } }, // Case-insensitive search in description
               { username: { $regex: regexPattern } }, // Case-insensitive search in username
             ],
           },
@@ -424,11 +460,16 @@ class CollectionRepo {
                   }, // If title matches, sortOrder = 1
                   {
                     case: {
-                      $regexMatch: { input: "$username", regex: regexPattern },
+                      $regexMatch: { input: "$description", regex: regexPattern },
                     },
                     then: 2,
-                  }, // If username matches,sortOrder = 2
-                  // { case: { $regexMatch: { input: "$tags", regex: regexPattern } }, then: 3 },  // If tags match, sortOrder = 3
+                  }, // If title matches, sortOrder = 1
+                  {
+                    case: {
+                      $regexMatch: { input: "$username", regex: regexPattern },
+                    },
+                    then: 3,
+                  },      
                 ],
                 default: 4, // If no match, sortOrder = 4 (higher value to be at the bottom)
               },
@@ -453,7 +494,6 @@ class CollectionRepo {
         { $skip: (page - 1) * parseInt(pageSize) }, // Skip documents based on page number
         { $limit: parseInt(pageSize) }, // Limit the number of documents per page
       ]).exec();
-
       return collections;
     } catch (error) {
       console.log(
