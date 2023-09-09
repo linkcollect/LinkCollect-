@@ -492,6 +492,7 @@ class CollectionRepo {
             upvotes: 1,
             views: 1,
             description: 1,
+            image: 1,
             tags: 1,
             countOfLinks: 1,
             countOfUpvotes: 1,
@@ -506,7 +507,7 @@ class CollectionRepo {
       return collections;
     } catch (error) {
       console.log(
-        "Err in repository layer getting saved collection failed",
+        "Err in repository layer getting search collection failed",
         error
       );
       throw error;
