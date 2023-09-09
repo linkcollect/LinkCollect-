@@ -386,7 +386,6 @@ class CollectionRepo {
       if (queryFor.length < 2 || queryFor.length > 60) {
         throw "search term should be at least 2 characters long";
       }
-
       // find search term in search history
       const searchK = await SearchHistory.findOne({ keyword: queryFor });
       if (searchK) {
@@ -395,38 +394,48 @@ class CollectionRepo {
       } else {
         await SearchHistory.create({ keyword: queryFor, count: 1 });
       }
-      // Create a regex pattern for the search term
-      // const regexPattern = new RegExp(queryFor, "i");
+      // Create a Set to store unique results
 
-       // Create a Set to store unique results
-       const uniqueCollections = new Set();
-       let collections: any = [];
- 
-       // divide the sentence in an array of words
-       // Split the query into individual words
+      let collections: any = [];
+
+      // first search for complete word, match the results.
+       let results = await this.searchForAWord(queryFor, page, pageSize);
+       results.forEach((item) => collections.push(item));
+
+      // now search for each word in the query
+      // Split the query into individual words
        const words = queryFor.split(/\s+/);
- 
-       for (const word of words) {
-         let result = await this.searchForAWord(word, page, pageSize);
- 
-         // add the result to the collections array
-         result.forEach((item) => uniqueCollections.add(item));
-         collections = collections.concat(result);
-         // Deduplicate and sort the combined results
-       }
- 
-       collections = Array.from(uniqueCollections);
 
+        if(words.length > 1) {
+          for (const word of words) {
+
+            let result = await this.searchForAWord(word, page, pageSize);
+            let filter = result.filter((item) => this.isNotDuplicate(collections, item));
+            // Merge the results into uniqueCollections without duplicates
+            collections.push(...filter);
+    
+          }
+        }
 
       return collections;
     } catch (error) {
       console.log(
-        "Err in repository layer getting saved collection failed",
+        "Err in repository layer getting searched collection failed",
         error
       );
       throw error;
     }
   };
+
+  // Helper function to check for duplicate items in an array
+ isNotDuplicate = (arr: any, item: any) =>{ 
+  for (const elem of arr) {
+    if (elem._id.toString() === item._id.toString()) {
+      return false; // Duplicate found
+    }
+  }
+  return true; // No duplicate found
+ }
 
   searchForAWord = async (queryFor, page, pageSize) => {
     try {
