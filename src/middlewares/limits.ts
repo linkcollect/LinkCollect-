@@ -27,7 +27,7 @@ export const collectionLimit = async (
     console.log("isPremium", user.username, user.isPremium);
 
     // for normal free users, limit to 30 collections per user
-    if (user.collections.length > 30 && !user.isPremium ) {
+    if (user.collections.length > 50 && !user.isPremium ) {
       console.log("30 limit exceeded");
       return res.status(404).json({
         success: false,
@@ -45,8 +45,8 @@ export const collectionLimit = async (
       return res.status(404).json({
         success: false,
         data: {},
-        err: "Validation Error {Link Quota Exceeded}",
-        message: "Link limit exceeded",
+        err: "Validation Error {Collection Quota Exceeded}",
+        message: "Collection limit exceeded",
       });
     }
 
