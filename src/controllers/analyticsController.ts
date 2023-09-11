@@ -35,7 +35,9 @@ const getAll = async (req, res) => {
 
 const getLiveMessage = async (req, res) => {
   try {
-    console.log("hostname", req.hostname)
+    const hostname = req.headers.host; // This contains the hostname and port
+    const [host, port] = hostname.split(':'); // Split the host and port
+    console.log("host", host, port)
     return res.status(201).json({
       data: liveMessage,
       success: true,
