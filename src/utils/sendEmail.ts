@@ -3,6 +3,7 @@ import { verifyEmail } from "../constants/emailTemps/verifyEmail";
 // const { USER, PASS, BACKEND_BASE_URL,CLIENT_ID_NodeMailer,CLIENT_SECRET_NodeMailer,REFRESH_TOKEN } = require("../config/index");
 import env from "../config/index";
 import { sendOTPMail } from "../constants/emailTemps/sendOTPMail";
+import { weeklyEmail } from "../constants/emailTemps/weeklyEmail";
 
 let transporter = nodemailer.createTransport({
   service :"gmail",
@@ -41,6 +42,30 @@ let transporter = nodemailer.createTransport({
       console.log("error",error);
     }
   }, 
+
+  weeklyFeatureEmail: async function weeklyFeatureEmail(name: any, userEmail: any) {
+    try {
+      let info = await transporter.sendMail({
+        from: `LinkCollect ${env.USER}`,
+        to: userEmail,
+        subject: "LinkCollect Verification Link",
+        text: "LinkCollect Verification Link for " + name,
+        html: weeklyEmail(name),
+      },function(error,result){
+
+        if(error){
+         console.log("err",error);
+        } else {
+          console.log("weekly email sent");
+        }
+        transporter.close();}
+      );
+      
+      console.log("info",info)
+    } catch (error) {
+      console.log("error",error);
+    }
+  }
 };
 
 export default Email;
