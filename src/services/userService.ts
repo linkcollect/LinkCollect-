@@ -104,15 +104,7 @@ class UserService {
       if(!user) {
         throw { message: "No user found with this email" };
       }
-      const encryptedPassword = user.password;
-      const passwordMatch = this.checkPassword(
-        data.password,
-        encryptedPassword
-      );
-      if (!passwordMatch) {
-        console.log("Password doesn't match");
-        throw { error: "Incorrect password" };
-      }
+
       const userD = await this.destroy(data);
       return userD;
     } catch (error) {
@@ -296,8 +288,7 @@ class UserService {
   }
   async checkUsername(username) {
     try {
-      console.log(username);
-      const response = await this.userRepository.checkUsername(username);
+      const response = await this.userRepository.checkUsername(username.toString());
       return response;
     } catch (error) {
       console.log("Something went wrong in service layer!");

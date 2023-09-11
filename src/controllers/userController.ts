@@ -47,11 +47,16 @@ const togglePrivacy = async (req, res) => {
 
 const checkUsername = async (req, res) => {
   try {
-    const check = await userService.checkUsername(req.body);
+    let username = req.query.username;
+    if(!username) {
+      return "no username passed"
+    }
+    const check = await userService.checkUsername(username);
     // console.log(check);
+    let message = check ? "Username is available" : "Username is not available"; 
     return res.status(201).json({
       success: true,
-      message: "Username is available",
+      message,
       data: check,
       err: {},
     });
@@ -259,6 +264,7 @@ const setPremium = async (req, res) => {
 };
 const deleteUser = async (req, res) => {
   try {
+
     const response = await userService.deleteUser(req.body);
     return res.status(201).json({
       success: true,

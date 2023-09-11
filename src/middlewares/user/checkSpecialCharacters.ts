@@ -1,7 +1,8 @@
 export const checkSpecialCharacters = (req: any, res: any, next: any) => {
   try {
-    const username: any = req.body.username;
-    const specialChars = username.match(/[^A-Za-z0-9\s]/g);
+    const username: any = req.query.username;
+    const specialChars = username.match(/[^A-Za-z0-9\s.]/g);
+
     if (specialChars !== null) {
       return res.status(404).json({
         message: "Username contained special characters!",

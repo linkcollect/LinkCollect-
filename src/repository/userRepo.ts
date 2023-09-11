@@ -182,13 +182,14 @@ class UserRepository {
     }
   }
 
-  async checkUsername(username) {
+  async checkUsername(username: String) {
     try {
-      const user = await User.findOne(username);
+      const user = await User.findOne({username: username});
+      console.log("user", user);
       if (user) {
-        throw new Error("Username is not available");
+        return false;
       } else {
-        return "Username available";
+        return true;
       }
     } catch (error) {
       console.log("Something went wrong in fetching the user", error);
