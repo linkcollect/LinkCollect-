@@ -13,8 +13,10 @@ import {
 import isOwner from "../../middlewares/user/isOwner";
 import multer from "multer";
 import userController from "../../controllers/userController";
-const upload = multer();
-
+import { storage } from "../../cloudinary";
+const upload = multer({
+  storage,
+});
 // This api is called by the user himself after login to set the user on client
 router.get("/get-user/:id", UserControllers.getByUserId);
 // Never use underscores
@@ -56,7 +58,7 @@ router.delete(
   userController.deleteUser
 );
 
-router.patch("/userInfo", userController.userInfo)
+router.patch("/userInfo", upload.single("profilePic"), userController.userInfo)
 
 //giving error on local @TODO
 // Update profile-pic Route

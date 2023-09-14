@@ -240,6 +240,9 @@ const updateProfilePic = async (req, res) => {
 };
 const userInfo = async (req: any, res) => {
   try {
+    if (req.file) {
+      req.body.profilePic = req.file.path;
+    }
     const data = req.body;
     const userID = req.userId;
     const profilePic = await userService.userInfo(
