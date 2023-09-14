@@ -27,7 +27,6 @@ router.get(
   UserControllers.checkUsername
 );
 
-router.post("/create_socials/:id", UserControllers.createSocials);
 router.post(
   "/signup",
   validateUserAuthforSignUp,
@@ -49,14 +48,15 @@ router.get("/isauthenticated", UserControllers.isAuthenticated);
 router.get("/google-auth", catchAsync(googleAuth));
 
 // only admin
-router.get("/setPremium", UserControllers.setPremium);
+router.patch("/setPremium", UserControllers.setPremium);
 
 // delete user route
 router.delete(
   "/delete/:id",
-  validateUserAuthforSignIn,
   userController.deleteUser
 );
+
+router.patch("/userInfo", userController.userInfo)
 
 //giving error on local @TODO
 // Update profile-pic Route

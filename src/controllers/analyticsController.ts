@@ -35,9 +35,9 @@ const getAll = async (req, res) => {
 
 const getLiveMessage = async (req, res) => {
   try {
-    const hostname = req.headers.host; // This contains the hostname and port
-    const [host, port] = hostname.split(':'); // Split the host and port
-    console.log("host", host, port)
+    // const hostname = req.headers.host; // This contains the hostname and port
+    // const [host, port] = hostname.split(':'); // Split the host and port
+    // console.log("host", host, port)
     return res.status(201).json({
       data: liveMessage,
       success: true,
@@ -55,7 +55,8 @@ const getLiveMessage = async (req, res) => {
 };
 const getSearchHistory = async (req, res) => {
   try {
-    const searchHistory = await SearchHistory.find();
+    // sort in desc order of count
+    const searchHistory = await SearchHistory.find().sort({ count: -1 });
     return res.status(201).json({
       data: searchHistory,
       success: true,

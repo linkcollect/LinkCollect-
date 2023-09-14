@@ -7,6 +7,7 @@ export interface IUser extends Document {
   email: string;
   username: string;
   profilePic?: string;
+  bio?: string;
   password?: string;
   isPremium: boolean;
   isPublic: boolean;
@@ -32,6 +33,9 @@ const userSchema: Schema = new Schema(
       type: String,
       required: true,
       unique: true,
+    },
+    bio: {
+      type: String,
     },
     profilePic: {
       type: String,

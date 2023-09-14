@@ -248,6 +248,15 @@ class UserService {
       throw error;
     }
   }
+  async userInfo(data, userID) {
+    try {
+      const userRes = await this.userRepository.userInfo(data, userID);
+      return userRes;
+    } catch (error) {
+      console.log("Something went wrong in the changing user infor");
+      throw error;
+    }
+  }
 
   checkPassword(userInputPassword, encryptedPassword) {
     try {
