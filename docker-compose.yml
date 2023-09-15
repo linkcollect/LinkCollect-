@@ -27,6 +27,7 @@ services:
             target: base
         volumes:
             - ./mongo:/data/db
+            - ./dump:/data/dump
         ports:
             - "27017:27017" 
         networks:
@@ -76,4 +77,5 @@ networks:
     driver: bridge
 
 volumes:
-    mongo: {}
+    mongo: 
+    dump: 

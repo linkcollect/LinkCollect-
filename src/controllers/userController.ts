@@ -47,11 +47,16 @@ const togglePrivacy = async (req, res) => {
 
 const checkUsername = async (req, res) => {
   try {
-    const check = await userService.checkUsername(req.body);
+    let username = req.query.username;
+    if(!username) {
+      return "no username passed"
+    }
+    const check = await userService.checkUsername(username);
     // console.log(check);
+    let message = check ? "Username is available" : "Username is not available"; 
     return res.status(201).json({
       success: true,
-      message: "Username is available",
+      message,
       data: check,
       err: {},
     });
@@ -233,6 +238,33 @@ const updateProfilePic = async (req, res) => {
     });
   }
 };
+const userInfo = async (req: any, res) => {
+  try {
+    if (req.file) {
+      req.body.profilePic = req.file.path;
+    }
+    const data = req.body;
+    const userID = req.userId;
+    const profilePic = await userService.userInfo(
+      data,
+      userID
+   );
+
+    return res.status(201).json({
+      data: profilePic,
+      success: true,
+      message: "Successfully Updated User details",
+      err: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      data: {},
+      success: false,
+      message: "Not able to Update  User details",
+      err: error,
+    });
+  }
+};
 const setPremium = async (req, res) => {
   try {
     const data = req.body;
@@ -259,6 +291,7 @@ const setPremium = async (req, res) => {
 };
 const deleteUser = async (req, res) => {
   try {
+
     const response = await userService.deleteUser(req.body);
     return res.status(201).json({
       success: true,
@@ -278,12 +311,11 @@ const deleteUser = async (req, res) => {
 };
 
 const createSocials = async (req,res) =>{
-  // console.log("hererere");
+
   try {
     const data = req.body;
     // console.log(req);
-    //change this to req.userId here in production, for testing im checking from req.params
-    const userID = req.params.id;
+    const userID = req.userId;
     // console.log(userID);
     const data2 = await userService.setSocials(
      data, 
@@ -322,7 +354,8 @@ const userController = {
   togglePrivacy,
   checkUsername,
   setPremium,
-  deleteUser
+  deleteUser,
+  userInfo
 };
 
 export default userController;
