@@ -46,7 +46,7 @@ export const googleAuth = async (req: Request, res: Response) => {
      // create a random collection 
      const collectionData = {
       title: "Random Collection", 
-      userId: user.id,
+      userId: user._id,
       description: "this is a private collection, save all random links here ",
       username: user.username,
       isPublic: false,
