@@ -20,8 +20,18 @@ export const googleAuth = async (req: Request, res: Response) => {
    if (!user) {
     let userN = userData.email.split("@")[0];
     const user2 = await User.findOne({username: userN});
-    if(user2){
+    let isUsernameAvailable = await userService.checkUsername(userN);
+    if(user2 || userN.length < 4 || isUsernameAvailable === false){
       userN = userN + Math.floor(Math.random() * 1000).toString(); // add random number to username
+      // check if the username is available
+      let isUsernameAvailableNow = await userService.checkUsername(userN);
+
+      while(isUsernameAvailableNow === false){
+        userN = userN + Math.floor(Math.random() * 1000).toString(); // add random number to username
+        // check if the username is available
+        isUsernameAvailableNow = await userService.checkUsername(userN);
+      }
+
     }
     console.log("userName generated", userN);
 

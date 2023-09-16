@@ -15,6 +15,7 @@ const create = async (req, res) => {
       err: {},
     });
   } catch (error: any) {
+    console.log(error)
     return res.status(500).json({
       message: error.message,
       data: {},
@@ -230,6 +231,7 @@ const updateProfilePic = async (req, res) => {
       err: {},
     });
   } catch (error) {
+
     return res.status(500).json({
       data: {},
       success: false,

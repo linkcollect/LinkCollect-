@@ -16,7 +16,6 @@ class UserService {
 
   async validateNewUser(data) {
 
-    console.log("data", data)
     data.username = data.email.split("@")[0];
     data.email = data.email.trim();
     data.emailToken = randomBytes(32).toString("hex");
@@ -25,18 +24,30 @@ class UserService {
       data.isPremium = false
     }
 
-    if (data.username && data.username.length < 3) {
+    let isUsernameAvailable = await this.checkUsername(data.username);
+
+    if (data.username && data.username.length < 3 || data.username && isUsernameAvailable === false) {
       data.username = data.username + randomBytes(3).toString("hex"); // to make username unique and not too long add 2 randome numbers and two chars
+      let isUsernameAvailableNow = await this.checkUsername(data.username);
+
+      while(isUsernameAvailableNow === false){
+        data.username = data.username + Math.floor(Math.random() * 1000).toString(); // add random number to username
+        // check if the username is available
+        isUsernameAvailableNow = await this.checkUsername(data.username);
+      }
+
     }
 
-    if (data.username) {
-      const check = await this.userRepository.checkUsername({
-        username: data.username,
-      });
-      if ("Username available" !== check) {
-        data.username = data.username + randomBytes(3).toString("hex"); // to make username unique and not too long add 2 randome numbers and two chars
-      }
-    }
+    // if (data.username) {
+    //   const check = await this.userRepository.checkUsername({
+    //     username: data.username,
+    //   });
+    //   if ("Username available" !== check) {
+    //     data.username = data.username + randomBytes(3).toString("hex"); // to make username unique and not too long add 2 randome numbers and two chars
+    //   }
+    // }
+
+
 
     if (data.social && data.social.length != 0) {
       let socialData = data.social;
@@ -47,7 +58,6 @@ class UserService {
       });
       data.social = social;
     }
-
 
     return data
   }
