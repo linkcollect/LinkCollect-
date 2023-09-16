@@ -293,7 +293,17 @@ const setPremium = async (req, res) => {
 };
 const deleteUser = async (req, res) => {
   try {
-
+    let userID = req.userId;
+    let idFromParams = req.params.id;
+    if (userID !== idFromParams) {
+      return res.status(401).json({
+        success: false,
+        message: "You are not authorized to delete this user",
+        data: {},
+        err: {},
+      });
+    }
+    
     const response = await userService.deleteUser(req.body);
     return res.status(201).json({
       success: true,
