@@ -187,7 +187,7 @@ class UserRepository {
     try {
       const user = await User.findOne({username: username});
       console.log("user", user);
-      if (user) {
+      if (user || username.length < 4) {
         return false;
       } else {
         return true;
