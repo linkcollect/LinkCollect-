@@ -252,6 +252,9 @@ class UserRepository {
       if (data.profilePic) {
         user.profilePic = data.profilePic;
       }
+      if (data.isPublic !== undefined || data.isPublic !== null) {
+        user.isPublic = data.isPublic;
+      }
 
       // Save the updated user data
       await user.save();
