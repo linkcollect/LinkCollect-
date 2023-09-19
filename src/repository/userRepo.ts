@@ -241,6 +241,11 @@ class UserRepository {
         }
       }
 
+      if(data.socials) {
+        console.log("data.socials", data.socials, JSON.parse(data.socials));
+        user.socials = JSON.parse(data.socials);
+      }
+
       if (data.bio) {
         user.bio = data.bio;
       }
