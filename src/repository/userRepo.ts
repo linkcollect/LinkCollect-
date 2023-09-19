@@ -253,10 +253,6 @@ class UserRepository {
         user.profilePic = data.profilePic;
       }
 
-      if (data.socials) {
-        user.socials = data.socials;
-      }
-
       // Save the updated user data
       await user.save();
 
