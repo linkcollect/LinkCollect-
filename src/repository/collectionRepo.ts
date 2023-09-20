@@ -90,8 +90,15 @@ class CollectionRepo {
       if (!user) {
         throw new Error("User ID is not a Valid ID");
       }
+      if (!collection) {
+        // throw new Error("collection not found");
+        return "collection not found";
+      }
 
-      await collection.saves.pull(userId); // remove from set
+      if(collection.saves) {
+        await collection.saves.pull(userId); // remove from set
+      }
+
       user.savedCollections = this.deleteFromArray(
         user.savedCollections,
         collectionId
@@ -498,6 +505,7 @@ class CollectionRepo {
             countOfUpvotes: 1,
             username: 1,
             sortOrder: 1,
+            userId: 1,
           },
         },
         { $sort: { sortOrder: 1, countOfUpvotes: -1, views: -1 } },
@@ -581,6 +589,14 @@ class CollectionRepo {
       const collection = await Collection.findById(id).populate({
         path: "timelines",
       });
+      if(!collection) {
+        throw "Collection not found"
+      }
+      const user = await User.findById(collection.userId);
+      if(!user) {
+        return collection;
+      }
+      collection.username = user.username;
       return collection;
     } catch (error) {
       console.log("Something went wrong at collection repository layer", error);
