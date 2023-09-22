@@ -33,7 +33,7 @@ async function verifyWebhookSignature(sign, request) {
     console.log("raw body", request.body, secret)
     const signature = Buffer.from(sign.toString(), 'utf8');
     console.log("signature", signature);
-    const secondHmac = hmac.update(request.body).digest('hex')
+    const secondHmac = hmac.update(JSON.stringify(request.body)).digest('hex')
     console.log("secondHmac", secondHmac);
     const digest    = Buffer.from(secondHmac, 'utf8');
     console.log("digest", digest);
