@@ -8,7 +8,7 @@ import env from "../config/index";
 
 const webhook = async (req, res) => {
   try {
-    const sign = req.headers["X-Signature"];
+    const sign = req.headers["x-signature"];
 
     console.log("event signatature", req.headers);
     console.log("req sign", sign);
