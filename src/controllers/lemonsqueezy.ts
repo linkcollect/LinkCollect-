@@ -28,9 +28,11 @@ const webhook = async (req, res) => {
 
 async function verifyWebhookSignature(sign, payload) {
     // Calculate the expected signature based on the request body and secret key
+    const requestBody = JSON.stringify(payload);
+
         const expectedSignature = crypto
         .createHmac('sha256', env.LS_SIGNATURE_SECRET)
-        .update(payload)
+        .update(requestBody, 'utf-8')
         .digest('hex');
 
         console.log("expectedSignature", expectedSignature);
