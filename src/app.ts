@@ -36,7 +36,6 @@ const setUpAndStartServer = async () => {
     verify: function(req: any, res, buf, encoding) {
         // get rawBody        
         req.rawBody = buf.toString();
-        console.log("rawBody", req.rawBody);
     }
 }));
   app.use(bodyParser.urlencoded({ extended: true }));
