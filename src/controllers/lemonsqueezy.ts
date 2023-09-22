@@ -30,10 +30,11 @@ async function verifyWebhookSignature(sign, request) {
 
     const secret    = env.LS_SIGNATURE_SECRET;
     const hmac      = crypto.createHmac('sha256', secret);
+    console.log("raw body", request.rawBody)
     const digest    = Buffer.from(hmac.update(request.rawBody).digest('hex'), 'utf8');
-    const signature = Buffer.from(request.get('x-signature') || '', 'utf8');
-    console.log("digest", digest);
+    const signature = Buffer.from(sign || '', 'utf8');
     console.log("signature", signature);
+    console.log("digest", digest);
 
     if (!crypto.timingSafeEqual(digest, signature)) {
         return false
