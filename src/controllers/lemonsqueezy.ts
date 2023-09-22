@@ -31,7 +31,7 @@ async function verifyWebhookSignature(sign, request) {
     const secret    = env.LS_SIGNATURE_SECRET;
     const hmac      = crypto.createHmac('sha256', secret);
     console.log("raw body", request.rawBody)
-    const digest    = Buffer.from(hmac.update(request.rawBody).digest('hex'), 'utf8');
+    const digest    = Buffer.from(hmac.update(request.body).digest('hex'), 'utf8');
     const signature = Buffer.from(sign || '', 'utf8');
     console.log("signature", signature);
     console.log("digest", digest);
