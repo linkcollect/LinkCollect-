@@ -39,11 +39,15 @@ async function verifyWebhookSignature(sign, request) {
 } 
 
 async function fulfillTheOrder(email) {
+ const userbefore = await User.findOne(
+        { email: email }
+ );
+ console.log("before",userbefore?.username,userbefore?.isPremium);
   const user = await User.findOneAndUpdate(
     { email: email },
     { isPremium: true }
   );
-  console.log(user?.username,user?.isPremium);
+  console.log(user?.username, user?.isPremium);
 }
 
 const lemonsqueezyController = { webhook };
