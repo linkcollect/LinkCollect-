@@ -21,6 +21,8 @@ const CLIENT_ID_NodeMailer = process.env.client_id_NodeMailer;
 const CLIENT_SECRET_NodeMailer = process.env.client_secret_NodeMailer;
 const REFRESH_TOKEN = process.env.refresh_token;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const LS_SIGNATURE_SECRET = process.env.LS_SIGNATURE_SECRET;
+const LS_API_KEY = process.env.LS_API_KEY;
 
 const config = {
   GOOGLECLIENTID,
@@ -43,6 +45,8 @@ const config = {
   CLIENT_SECRET_NodeMailer,
   REFRESH_TOKEN,
   STRIPE_SECRET_KEY,
+  LS_SIGNATURE_SECRET,
+  LS_API_KEY
 };
 
 
