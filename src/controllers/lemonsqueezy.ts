@@ -13,7 +13,7 @@ const webhook = async (req, res) => {
 
     console.log("req sign", sign);
     console.log("event", req.body, req.body.data.attributes.user_email);
-    let isLS = verifyWebhookSignature(sign, req.body);
+    let isLS = verifyWebhookSignature(sign, req);
 
     if(!isLS) {
         console.log("not LS");
@@ -26,24 +26,20 @@ const webhook = async (req, res) => {
   }
 };
 
-async function verifyWebhookSignature(sign, payload) {
-    // Calculate the expected signature based on the request body and secret key
-    const requestBody = JSON.stringify(payload);
+async function verifyWebhookSignature(sign, request) {
 
-        const expectedSignature = crypto
-        .createHmac('sha256', env.LS_SIGNATURE_SECRET)
-        .update(requestBody, 'utf-8')
-        .digest('hex');
+    const secret    = env.LS_SIGNATURE_SECRET;
+    const hmac      = crypto.createHmac('sha256', secret);
+    const digest    = Buffer.from(hmac.update(request.rawBody).digest('hex'), 'utf8');
+    const signature = Buffer.from(request.get('x-signature') || '', 'utf8');
+    console.log("digest", digest);
+    console.log("signature", signature);
 
-        console.log("expectedSignature", expectedSignature);
-        console.log("sign", sign);
-    // Compare event signature to expected signature
-        if (sign == expectedSignature) {
-            return true
-        }
-        else {
-            return false
-        }
+    if (!crypto.timingSafeEqual(digest, signature)) {
+        return false
+    }
+    return true
+
     }
 
 // async function fulfillTheOrder(session) {
