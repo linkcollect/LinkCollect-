@@ -28,14 +28,15 @@ const webhook = async (req, res) => {
 
 async function verifyWebhookSignature(sign, request) {
 
-    const secret    = env.LS_SIGNATURE_SECRET;
-    const hmac      = crypto.createHmac('sha256', secret);
-    console.log("raw body", request.body, secret)
-    const signature = Buffer.from(sign.toString(), 'utf8');
+    const secret: any    = env.LS_SIGNATURE_SECRET;
+
+    const hmac : any     = crypto.createHmac('sha256', secret);
+    console.log("raw body", request.rawBody, secret)
+    const signature : any = Buffer.from(sign, 'utf8');
     console.log("signature", signature);
-    const secondHmac = hmac.update(JSON.stringify(request.body)).digest('hex')
+    const secondHmac : any = hmac.update(request.rawBody).digest('hex');
     console.log("secondHmac", secondHmac);
-    const digest    = Buffer.from(secondHmac, 'utf8');
+    const digest : any    = Buffer.from(secondHmac, 'utf8');
     console.log("digest", digest);
 
     if (!crypto.timingSafeEqual(digest, signature)) {

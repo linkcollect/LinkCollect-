@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 import paymentController from "./controllers/paymentController";
 import http from "http";
 import cron from 'node-cron';
+import crypto from 'crypto';
 import cronSchedule from "./utils/cron-jobs/cronJobs";
 const app = express();
 
@@ -30,7 +31,14 @@ const setUpAndStartServer = async () => {
     paymentController.webhook
   );
 
-  app.use(bodyParser.json());
+  // app.use(bodyParser.json());
+  app.use(bodyParser.json({
+    verify: function(req: any, res, buf, encoding) {
+        // get rawBody        
+        req.rawBody = buf.toString();
+        console.log("rawBody", req.rawBody);
+    }
+}));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(decryptUser);
 
