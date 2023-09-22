@@ -10,15 +10,13 @@ import env from "../config/index";
 const webhook = async (req, res) => {
   try {
     const sign = req.headers["x-signature"];
-
-    console.log("req sign", sign);
-    console.log("event", req.body, req.body.data.attributes.user_email);
     let isLS = await verifyWebhookSignature(sign, req);
-
     if(!isLS) {
         console.log("not LS");
+    } else {
+        console.log("is LS");
+        await fulfillTheOrder(req.body.data.attributes.user_email)
     }
-
     res.sendStatus(200);
   } catch (err: any) {
     console.log("ERROR", err.message);
@@ -27,32 +25,26 @@ const webhook = async (req, res) => {
 };
 
 async function verifyWebhookSignature(sign, request) {
-
     const secret: any    = env.LS_SIGNATURE_SECRET;
 
     const hmac : any     = crypto.createHmac('sha256', secret);
-    console.log("raw body", request.rawBody, secret)
     const signature : any = Buffer.from(sign, 'utf8');
-    console.log("signature", signature);
     const secondHmac : any = hmac.update(request.rawBody).digest('hex');
-    console.log("secondHmac", secondHmac);
     const digest : any    = Buffer.from(secondHmac, 'utf8');
-    console.log("digest", digest);
 
     if (!crypto.timingSafeEqual(digest, signature)) {
         return false
     }
     return true
+} 
 
-    }
-
-// async function fulfillTheOrder(session) {
-//   const user = await User.findOneAndUpdate(
-//     { email: session.metadata.email },
-//     { isPremium: true }
-//   );
-//   console.log(user);
-// }
+async function fulfillTheOrder(email) {
+  const user = await User.findOneAndUpdate(
+    { email: email },
+    { isPremium: true }
+  );
+  console.log(user?.username,user?.isPremium);
+}
 
 const lemonsqueezyController = { webhook };
 
