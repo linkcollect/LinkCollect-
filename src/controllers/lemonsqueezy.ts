@@ -13,7 +13,7 @@ const webhook = async (req, res) => {
 
     console.log("req sign", sign);
     console.log("event", req.body, req.body.data.attributes.user_email);
-    let isLS = verifyWebhookSignature(sign, req);
+    let isLS = await verifyWebhookSignature(sign, req);
 
     if(!isLS) {
         console.log("not LS");
@@ -30,7 +30,7 @@ async function verifyWebhookSignature(sign, request) {
 
     const secret    = env.LS_SIGNATURE_SECRET;
     const hmac      = crypto.createHmac('sha256', secret);
-    console.log("raw body", request.rawBody)
+    console.log("raw body", request.body)
     const digest    = Buffer.from(hmac.update(request.body).digest('hex'), 'utf8');
     const signature = Buffer.from(sign || '', 'utf8');
     console.log("signature", signature);
