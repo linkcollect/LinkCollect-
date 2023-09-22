@@ -10,8 +10,9 @@ const webhook = async (req, res) => {
   try {
     const sign = req.headers["X-Signature"];
 
-    console.log("event", req.body);
-    console.log("event signatature", sign);
+    console.log("event signatature", req.headers);
+    console.log("req sign", sign);
+    console.log("event", req.body, req.body.data.attributes.user_email);
 
 
     res.sendStatus(200);
