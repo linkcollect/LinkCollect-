@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "models";
+import  User  from "../../models/user";
 import CollectionModel from "../../models/collection";
 
 interface AuthenticatedRequest extends Request {
@@ -76,7 +76,7 @@ export const isCollectionPublic = async (
         err: "Unauthorized to perform this action",
         data: {},
       });
-      
+
     } else {
       next();
     }
