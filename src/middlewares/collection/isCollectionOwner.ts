@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { User } from "models";
 import CollectionModel from "../../models/collection";
 
 interface AuthenticatedRequest extends Request {
@@ -60,12 +61,22 @@ export const isCollectionPublic = async (
       req.userId !== collection.userId.toString() &&
       !collection.isPublic
     ) {
+      const collectionOwner = await User.findById(collection.userId);
+      if(collectionOwner?.isPublic === false) {
+        res.status(400).json({
+          success: false,
+          message: "The collection you're trying to access is private",
+          err: "Unauthorized to perform this action",
+          data: {},
+        });
+      }
       res.status(400).json({
         success: false,
         message: "The collection you're trying to access is private",
         err: "Unauthorized to perform this action",
         data: {},
       });
+      
     } else {
       next();
     }
