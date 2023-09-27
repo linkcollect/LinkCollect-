@@ -61,15 +61,6 @@ export const isCollectionPublic = async (
       req.userId !== collection.userId.toString() &&
       !collection.isPublic
     ) {
-      const collectionOwner = await User.findById(collection.userId);
-      if(collectionOwner?.isPublic === false) {
-        res.status(400).json({
-          success: false,
-          message: "The collection you're trying to access is private",
-          err: "Unauthorized to perform this action",
-          data: {},
-        });
-      }
       res.status(400).json({
         success: false,
         message: "The collection you're trying to access is private",
@@ -77,7 +68,21 @@ export const isCollectionPublic = async (
         data: {},
       });
 
-    } else {
+    } else if (req.userId !== collection.userId.toString() &&
+      collection.isPublic) {
+      const collectionOwner = await User.findById(collection.userId);
+        if(collectionOwner?.isPublic === false ) {
+          res.status(400).json({
+            success: false,
+            message: "The collection you're trying to access is private",
+            err: "Unauthorized to perform this action",
+            data: {},
+          });
+        } else {
+          next();
+        }
+    } 
+    else {
       next();
     }
   } catch (error) {

@@ -600,9 +600,9 @@ class CollectionRepo {
       collection.username = user.username;
       collection.save();
 
-      if(user.isPublic === false) { 
-        return "User is private";
-      }
+      // if(user.isPublic === false ) { 
+      //   return "User is private";
+      // }
 
       return collection;
     } catch (error) {
