@@ -335,6 +335,16 @@ class UserService {
       if (validUserId) {
         isSameUser = user?.username === username;
       }
+
+      if(response.isPublic === false && !isSameUser) {
+          // Remove sensitive data
+          delete response.password;
+          delete response.emailToken;
+          delete response.email;
+
+          response.collections = [];
+          return response;
+      }
   
       // If userId is not null but not equal to the username
       if (!isSameUser || !validUserId || !user) {
