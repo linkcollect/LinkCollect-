@@ -95,7 +95,8 @@ const signIn = async (req, res) => {
 
 const getByUserId = async (req, res) => {
   try {
-    const response = await userService.getUserById(req.params.id);
+    
+    const response = await userService.getUserById(req.params.id, req.userId);
     return res.status(201).json({
       message: "Successfully fetched the user",
       data: response,
