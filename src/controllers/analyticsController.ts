@@ -83,7 +83,6 @@ const getMetaData = async (req, res) => {
   try {
     // fetch url from query params
     const url = req.query.url;
-    console.log("url", url);
 
     setTimeout(() => {
       if(!res.headersSent) {
@@ -96,7 +95,6 @@ const getMetaData = async (req, res) => {
     }, 2000);
     // Check if the metadata is already cached in Redis
     const cachedMetadata = await redisClient.get(url);
-    console.log("cachedMetadata", cachedMetadata);
 
     if (cachedMetadata) {
       const metadata = JSON.parse(cachedMetadata);
@@ -143,7 +141,6 @@ const getMetaData = async (req, res) => {
     const response = await axios.get(url);
     const html = response.data;
 
-    console.log("html", html);
 
     const $ = cheerio.load(html);
     const title = $("title").first().text();
@@ -153,8 +150,6 @@ const getMetaData = async (req, res) => {
     const twitterDescription = $('meta[property="twitter:description"]').attr(
       "content"
     );
-
-    console.log("html", html);
 
     // Store the metadata in Redis with a TTL (time to live) of 1 hour
     const metadata = {
