@@ -17,7 +17,7 @@ const app = express();
 import { Server, Socket } from "socket.io";
 // socket io imports
 import {ConnectSocketIo} from "./events/io"
-// import {createRedisClient} from './utils/redis/redis'
+import {createRedisClient} from './utils/redis/redis'
 
 const setUpAndStartServer = async () => {
 
@@ -64,24 +64,24 @@ const setUpAndStartServer = async () => {
     console.log(`Server Started at ${env.PORT}`);
   });
 
-  const io = new Server(server, {
-    cors: {
-      origin: "*",
-      // origin: "https://linkcollect.io", // production
-    },
-  });
+  // const io = new Server(server, {
+  //   cors: {
+  //     origin: "*",
+  //     // origin: "https://linkcollect.io", // production
+  //   },
+  // });
 
-  const onConnection = (socket) => {
-    console.log("here")
-    ConnectSocketIo(io, socket);
+  // const onConnection = (socket) => {
+  //   console.log("here")
+  //   ConnectSocketIo(io, socket);
 
-  }
+  // }
 
-  io.on("connection", onConnection);
+  // io.on("connection", onConnection);
 
   // schedule tasks to be run on the server
   //  cronSchedule(cron);
-  //  await createRedisClient()
+   await createRedisClient()
 
 
 }; 
