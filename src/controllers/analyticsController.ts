@@ -83,7 +83,7 @@ const getMetaData = async (req, res) => {
   try {
     // fetch url from query params
     const url = req.query.url;
-
+    console.log("url", url); 
     setTimeout(() => {
       if(!res.headersSent) {
         return res.status(200).json({
@@ -92,9 +92,14 @@ const getMetaData = async (req, res) => {
           message: "Timedout",
         });
       }
-    }, 2000);
+    }, 4000);
     // Check if the metadata is already cached in Redis
-    const cachedMetadata = await redisClient.get(url);
+    if(redisClient) {
+      console.log("cachedMetadata", cachedMetadata, redisClient);
+
+      var cachedMetadata = await redisClient.get(url);
+    }
+    console.log("cachedMetadata", cachedMetadata);
 
     if (cachedMetadata) {
       const metadata = JSON.parse(cachedMetadata);
@@ -126,8 +131,9 @@ const getMetaData = async (req, res) => {
         images: tweetData.imageLinks,
         twitterAll: tweetMetadata
       };
-     
-      await redisClient.set(url, JSON.stringify(metadata), "EX", 3600); // 3600 seconds (1 hour)
+     if(redisClient) {
+       await redisClient.set(url, JSON.stringify(metadata), "EX", 3600); // 3600 seconds (1 hour)
+     }
 
       return res.status(200).json({
         data: metadata,
@@ -159,7 +165,10 @@ const getMetaData = async (req, res) => {
       twitterImage,
       twitterDescription,
     };
+
+    if(redisClient) {
     await redisClient.set(url, JSON.stringify(metadata), "EX", 3600); // 3600 seconds (1 hour)
+    }
 
     return res.status(200).json({
       data: metadata,

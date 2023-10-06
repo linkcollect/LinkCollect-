@@ -15,6 +15,15 @@ up-prod:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d  --build
 	docker-compose logs --follow
 
+up-prod-backend:
+	make down
+	-make rmi
+	docker-compose -f docker-compose.backend.yml up -d  --build 
+	docker-compose logs --follow
+
+down-prod-backend:
+	docker-compose down backend
+	docker-compose -f docker-compose.backend.yml up -d  --build 
 down: 
 	docker-compose down
 

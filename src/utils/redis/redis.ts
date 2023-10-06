@@ -9,7 +9,7 @@ async function createRedisClient() {
 
 
    redisClient = createClient();
-   redisClient.on('error', err => console.log('Redis Client Error', err));
+   redisClient.on('error', err => { redisClient = null; });
    
    await redisClient.connect();
    console.log('Redis Client Connected');
