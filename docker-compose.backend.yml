@@ -17,18 +17,6 @@ services:
             - example-net
         restart: unless-stopped
         command: npm run dev
-    certbot:
-        image: certbot/certbot
-        container_name: certbot
-        volumes:
-        - ./images/configs/certbot/certbot-etc:/etc/letsencrypt/:rw
-        - ./images/configs/certbot/certbot-var:/var/lib/letsencrypt/:rw
-        - ./images/configs/certbot/www:/var/www/certbot/:rw
-        - ./images/configs/certbot/web-root:/var/www/html/:rw
-        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-        depends_on:
-            - nginx
-        command: certonly --webroot --webroot-path=/var/www/html --email harshsingh.eth@gmail.com --agree-tos --no-eff-email --staging -d localhost  -d dev.localhost
     nginx:
         build:
             context: .
@@ -59,8 +47,6 @@ networks:
 
 
 volumes:
-  certbot-etc:
-  certbot-var:
   web-root:
     driver: local
     driver_opts:

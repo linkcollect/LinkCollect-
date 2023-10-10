@@ -23,10 +23,20 @@ RUN chown -R www-data:www-data /var/lib/nginx
 EXPOSE 80 443
 
 # # add nginx staging conf
-# ADD images/configs/nginx/backup.linkcollect.io /etc/nginx/sites-available/backup.linkcollect.io
+ADD images/configs/nginx/backup.linkcollect.io /etc/nginx/sites-available/backup.linkcollect.io
 
 # # create symlinks
-# RUN ln -s /etc/nginx/sites-available/backup.linkcollect.io /etc/nginx/sites-enabled/backup.linkcollect.io
+RUN ln -s /etc/nginx/sites-available/backup.linkcollect.io /etc/nginx/sites-enabled/backup.linkcollect.io
+
+RUN mkdir my-scripts
+# # copy the sendInNgnix.sh script
+COPY images/certinitInContainer.sh /my-scripts/certinitInContainer.sh
+
+RUN chmod +x /my-scripts/certinitInContainer.sh
+
+# # run the script
+
+RUN /my-scripts/certinitInContainer.sh
 
 # work dir
 WORKDIR /etc/nginx
