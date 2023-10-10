@@ -21,7 +21,21 @@ export function weeklyEmail(name: string): string {
                                 <p
                                     style="color: #000; text-align: justify; font-size: 12px; font-weight: 500; line-height: 1.5; margin: 20px 0;"> Hey ${name},
                                     <br> <br> 
-                                    I've got some super-duper exciting news, and I couldn't wait to personally drop it in your inbox! 🎉 <br>
+                                    remember me? i'm harsh, founder of linkcollect
+                                    <br>
+                                    <br>
+                                    Just 2 things, 
+                                    <br>
+                                    <br>
+                                    <b> 1 - We have launched linkcollect version 2 on product hunt</b> : support us <a href="https://www.producthunt.com/posts/linkcollect" > here </a>
+                                    
+                                    <br>
+
+                                    
+                                    <b> 2 - We have some (10+) exciting new features to share with you </b> 
+                                    <br>
+                                    <br>
+
     
                                     But first, let's chat - how's your LinkCollect journey been so far? 😊. Should you have any questions, concerns, or suggestions, please don't hesitate to reply to this email.
                                     <br> <br> 
@@ -30,7 +44,16 @@ export function weeklyEmail(name: string): string {
                                     <br> <br> 
     
     
-                                    <b>Pin and Unpin Links and Collections</b>: You can now easily organize your links and collections by pinning or unpinning them for quick access.
+                                    <b>Settings page is live, change username, profile pic name etc </b>: You can now change your username, profile picture, and other settings from the settings page at linkcollect.io/settings
+                                    <br> <br> 
+
+                                    <!-- <br> <br>  -->
+
+                                    <b>Pin and Unpin Links and Collections</b>: You can now easily organize your links and collections by pinning or unpinning them for quick access. 
+                                    <br> <br> 
+                                    <!-- <br> <br>  -->
+
+                                    <b>Add notes to your links when you save them</b>: You can now add notes to your links when you save them, to help you remember why you saved them in the first place.
                                     <br> <br> 
                                     <!-- <br> <br>  -->
     
@@ -50,14 +73,26 @@ export function weeklyEmail(name: string): string {
     
     
                                     I invite you to log in to your LinkCollect dashboard and explore these new features. Don't hesitate to reach out if you encounter any questions or need assistance with anything.
-                                    <br> <br> 
-    
+                                    <br> 
+
+                                    <br> 
+                                    if you like linkcollect, we would appreciate if you could support us on product hunt, it would mean a lot to us 🥹, <a href="https://www.producthunt.com/posts/linkcollect" > click to support </a>
+
+                                    <br> 
+                                    <br> 
+
+                                    you can anytime reply to me if you already did, i would like to personally thanks you ❤️
+                                    <br> 
+                                    <br> 
     
                                     Lastly, an image of our dark mode explore page to tease you, how does it look ? 😌
-    
+                                    <br> 
                                     <div style="max-width: 100%; overflow: hidden;">
-                                        <img src="https://cdn.discordapp.com/attachments/1114891650758623302/1149263235577544794/image.png" alt="Dark Mode LinkCollect Dashboard Image" style="width: 100%; height: auto;">
-                                    </div>
+                                    <img src="https://cdn.discordapp.com/attachments/1114891650758623302/1149263235577544794/image.png" alt="Dark Mode LinkCollect Dashboard Image" style="width: 100%; height: auto;">
+                                   </div>
+
+    
+                                
     
     
                                    </p>

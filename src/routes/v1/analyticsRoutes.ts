@@ -9,7 +9,7 @@ router.get("/live-message", analyticsController.getLiveMessage);
 
 router.get("/search-history", analyticsController.getSearchHistory);
 
-router.post("/sendEmails", analyticsController.sendWeekyEmail)
+// router.post("/sendEmails", analyticsController.sendWeekyEmail)
 
 router.get("/getMetadata", analyticsController.getMetaData)
 
