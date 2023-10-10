@@ -38,8 +38,14 @@ RUN chmod +x /my-scripts/certinitInContainer.sh
 
 RUN /my-scripts/certinitInContainer.sh
 
+
+RUN chmod -R o+rw /etc/nginx
+
 # work dir
 WORKDIR /etc/nginx
+
+
+
 
 
 # Copy the nginx configuration file to the container
