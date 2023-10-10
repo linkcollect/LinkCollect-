@@ -25,11 +25,6 @@ services:
         container_name: nginx
         hostname: nginx
         restart: unless-stopped
-        volumes:
-            - ./images/configs/certbot/web-root:/var/www/html
-            - ./images/configs/nginx:/etc/nginx/conf.d
-            - ./images/configs/certbot/certbot-etc:/etc/letsencrypt
-            - ./images/configs/certbot/certbot-var:/var/lib/letsencrypt
         ports:
         - "80:80" 
         - "443:443" 
@@ -44,12 +39,3 @@ networks:
   example-net:
     external: true
     driver: bridge
-
-
-volumes:
-  web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/sammy/node_project/views/
-      o: bind
