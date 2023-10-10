@@ -31,10 +31,12 @@ docker-compose -f docker-compose.backend.yml run --rm --entrypoint "\
     --rsa-key-size $rsa_key_size \
     --agree-tos \
     --force-renewal \
-    -n \
-    --redirect \
+    --non-interactive \
     --nginx" nginx
 echo
 
 echo "### Reloading nginx ..."
 docker-compose -f docker-compose.backend.yml exec nginx nginx -s reload
+
+
+# certbot --nginx  -d backup.linkcollect.io --email harshsingh.eth@gmail.com --rsa-key-size 4096 --agree-tos --force-renewal --non-interactive

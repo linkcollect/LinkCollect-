@@ -80,4 +80,4 @@ echo "### Reloading nginx ..."
 docker-compose -f docker-compose.backend.yml exec nginx nginx -s reload
 
 
-# certbot certonly --webroot -w /var/www/certbot --staging -d backup.linkcollect.io --email harshsingh.eth@gmail.com --rsa-key-size 4096 --agree-tos --force-renewal
+# certbot --nginx  -d backup.linkcollect.io --email harshsingh.eth@gmail.com --rsa-key-size 4096 --agree-tos --force-renewal --non-interactive

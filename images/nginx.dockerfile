@@ -46,6 +46,6 @@ WORKDIR /etc/nginx
 # COPY images/configs/nginx.conf /etc/nginx/nginx.conf
 
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
 
 
