@@ -7,17 +7,13 @@ import {
   checkWhenSomeoneisFetchigCollection,
 } from "../../middlewares/validateRequests";
 import { collectionLimit } from "../../middlewares/limits";
-import { storage } from "../../cloudinary";
 import isUserPublic from "../../middlewares/user/isUserPublic";
 import {
   isCollectionOwner,
   isCollectionPublic,
 } from "../../middlewares/collection/isCollectionOwner";
-import multer from "multer";
-const upload = multer({
-  storage,
-});
 
+import { useImageUploader } from "../../middlewares/collection/useMulterImage";
 // Postioning of routes matter, let the specific routes come before general routes
 
 // -------------------------------SPECIAL ROUTES------------------------//
@@ -47,14 +43,15 @@ router.get("/", collectionController.getAllWithTimeline);
 //collection limit removing for testing
 router.post(
   "/",
-  upload.single("image"),
+  useImageUploader,
   collectionLimit,
   collectionController.create
 );
 router.patch(
   "/:id",
   isCollectionOwner,
-  upload.single("image"),
+  // upload.single("image"),
+  useImageUploader,
   collectionController.update
 );
 router.delete("/:id", isCollectionOwner, collectionController.deleteCollection);
