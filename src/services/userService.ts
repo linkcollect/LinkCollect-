@@ -251,7 +251,6 @@ class UserService {
       if (!user) {
         throw { error: "No user with the corresponding token exists!" };
       }
-      console.log("->", user);
       return user.id;
     } catch (error) {
       console.log("Something went wrong in the auth process");
@@ -326,7 +325,6 @@ class UserService {
   }
   async getByUsername(username, userId) {
     try {
-      console.log(username, userId);  
       const user = await this.userRepository.getByUserId(userId);
       const response = await this.userRepository.getByUsername(username);
       const validUserId = mongoose.isValidObjectId(userId);

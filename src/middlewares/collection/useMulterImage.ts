@@ -3,9 +3,13 @@ import  User  from "../../models/user";
 import CollectionModel from "../../models/collection";
 import multer from "multer";
 import { storage } from "../../cloudinary";
+import { storageS3 } from "../../cloudinary/aws";
+import env from "../../config/index";
 
+
+console.log("is aws",env.isS3);
 const upload = multer({
-  storage,
+  storage: env.isS3 === true ? storageS3 : storage,
   limits: {
     fileSize: 1 * 1024 * 1024, // 5 MB (you can adjust this limit as needed)
   },
