@@ -17,18 +17,6 @@ services:
             - example-net
         restart: unless-stopped
         command: npm run dev
-    certbot:
-        image: certbot/certbot
-        container_name: certbot
-        volumes:
-        - ./images/configs/certbot/certbot-etc:/etc/letsencrypt
-        - ./images/configs/certbot/certbot-var:/var/lib/letsencrypt
-        - ./images/configs/certbot/www:/var/www/certbot
-        - ./images/configs/certbot/web-root:/var/www/html
-        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-        depends_on:
-            - nginx
-        command: certonly --webroot --webroot-path=/var/www/html --email harshsingh.eth@gmail.com --agree-tos --no-eff-email --staging -d localhost  -d dev.localhost
     nginx:
         build:
             context: .
@@ -37,17 +25,12 @@ services:
         container_name: nginx
         hostname: nginx
         restart: unless-stopped
-        volumes:
-            - ./images/configs/certbot/web-root:/var/www/html
-            - ./images/configs/nginx:/etc/nginx/conf.d
-            - ./images/configs/certbot/certbot-etc:/etc/letsencrypt
-            - ./images/configs/certbot/certbot-var:/var/lib/letsencrypt
         ports:
         - "80:80" 
         - "443:443" 
         depends_on:
             - ts-node-docker
-            # command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
         networks:
             - example-net
 
@@ -56,14 +39,3 @@ networks:
   example-net:
     external: true
     driver: bridge
-
-
-volumes:
-  certbot-etc:
-  certbot-var:
-  web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/sammy/node_project/views/
-      o: bind

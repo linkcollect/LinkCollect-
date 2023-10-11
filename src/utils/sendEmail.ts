@@ -48,15 +48,15 @@ let transporter = nodemailer.createTransport({
       let info = await transporter.sendMail({
         from: `LinkCollect ${env.USER}`,
         to: userEmail,
-        subject: "LinkCollect Verification Link",
-        text: "LinkCollect Verification Link for " + name,
+        subject: "Hey "+ name +", do you remember me?",
+        text: "Hey "+ name +", do you remember me?",
         html: weeklyEmail(name),
       },function(error,result){
 
         if(error){
-         console.log("err",error);
+         console.log("err", userEmail);
         } else {
-          console.log("weekly email sent");
+          console.log("weekly email sent", userEmail);
         }
         transporter.close();}
       );
