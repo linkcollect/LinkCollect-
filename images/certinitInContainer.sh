@@ -18,7 +18,6 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-
 # certbot $staging_arg $email_arg $domain_args --rsa-key-size $rsa_key_size --agree-tos --force-renewal --redirect --nginx
 # echo
 
@@ -26,6 +25,8 @@ certbot --nginx $staging_arg $domain_args $email_arg --rsa-key-size $rsa_key_siz
 
 echo "### Done nginx ..."
 
+# echo "### Reloading nginx ..."
+nginx -s reload
 
 # run this inside nginx to get ssh access
 # certbot --nginx  -d backup.linkcollect.io --email harshsingh.eth@gmail.com --rsa-key-size 4096 --agree-tos --force-renewal --non-interactive

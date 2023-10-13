@@ -11,7 +11,7 @@ async function createRedisClient() {
    redisClient = createClient();
    redisClient.on('error', err => { 
       redisClient = null;
-      console.log('Redis Client Error', err);
+    
    });
    
    await redisClient.connect();

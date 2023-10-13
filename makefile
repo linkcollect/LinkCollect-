@@ -19,6 +19,7 @@ up-prod-backend:
 	make down
 	-make rmi
 	docker-compose -f docker-compose.backend.yml up -d  --build 
+	bash  images/nginxEntryPoint.sh
 	docker-compose logs --follow
 
 down-prod-backend:
