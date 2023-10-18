@@ -1,3 +1,4 @@
+require('newrelic');
 import bodyParser from "body-parser";
 import express from "express";
 import env from "./config/index";
