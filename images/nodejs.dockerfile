@@ -1,5 +1,6 @@
 # Base stage
 FROM node:18.0.0-alpine3.15 as base
+
 # Set the working directory
 WORKDIR /app
 
