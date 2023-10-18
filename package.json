@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/linkcollect/LinkCollect-/tree/ts#readme",
   "dependencies": {
+    "newrelic": "latest",
     "@prisma/client": "^5.0.0",
     "aws-sdk": "^2.1472.0",
     "axios": "^1.3.4",
