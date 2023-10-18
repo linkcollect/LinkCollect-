@@ -1,6 +1,6 @@
 #!/bin/bash
 email="harshsingh.eth@gmail.com" # Adding a valid address is strongly recommended
-staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
+staging=1 # Set to 1 if you're testing your setup to avoid hitting request limits
 domains=("backup.linkcollect.io") # Use an array to define multiple domains
 rsa_key_size=4096
 
