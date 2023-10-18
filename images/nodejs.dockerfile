@@ -12,8 +12,8 @@ COPY .env ./
 # Install dependencies
 #testing stuff start
 ENV NEW_RELIC_NO_CONFIG_FILE=true
-ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true \
-NEW_RELIC_LOG=stdout
+ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true 
+#NEW_RELIC_LOG=stdout
 ENV NEW_RELIC_LICENSE_KEY=42bf836ce95c8d892206b7ae579723daFFFFNRAL
 ENV NEW_RELIC_APP_NAME="linkcollectprodserverbackend"
 # end
@@ -34,17 +34,6 @@ COPY  . .
 # for development purpose only
 
 FROM base as production
-
-# Install PM2 globally - prod
-RUN npm i pm2 -g
-
-# Line below this is for testing purposes only if causing problems delete
-ENV NEW_RELIC_NO_CONFIG_FILE=true
-ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true \
-NEW_RELIC_LOG=stdout
-ENV NEW_RELIC_LICENSE_KEY=42bf836ce95c8d892206b7ae579723daFFFFNRAL
-ENV NEW_RELIC_APP_NAME="linkcollectprodserverbackend"
-# testing stuff ends here
 
 
 ENV NODE_PATH=./build
