@@ -24,9 +24,13 @@ EXPOSE 80 443
 
 # # add nginx staging conf
 ADD images/configs/nginx/backup.linkcollect.io /etc/nginx/sites-available/backup.linkcollect.io
+# ADD images/configs/nginx/dev.linkcollect.io /etc/nginx/sites-available/dev.linkcollect.io
+# ADD images/configs/nginx/api.linkcollect.io /etc/nginx/sites-available/api.linkcollect.io
 
 # # create symlinks
 RUN ln -s /etc/nginx/sites-available/backup.linkcollect.io /etc/nginx/sites-enabled/backup.linkcollect.io
+#RUN ln -s /etc/nginx/sites-available/dev.linkcollect.io /etc/nginx/sites-enabled/dev.linkcollect.io
+#RUN ln -s /etc/nginx/sites-available/api.linkcollect.io /etc/nginx/sites-enabled/api.linkcollect.io
 
 RUN mkdir my-scripts
 # # copy the sendInNgnix.sh script
