@@ -95,11 +95,9 @@ const getMetaData = async (req, res) => {
     }, 4000);
     // Check if the metadata is already cached in Redis
     if(redisClient) {
-      console.log("cachedMetadata", cachedMetadata, redisClient);
 
       var cachedMetadata = await redisClient.get(url);
     }
-    console.log("cachedMetadata", cachedMetadata);
 
     if (cachedMetadata) {
       const metadata = JSON.parse(cachedMetadata);
@@ -125,7 +123,6 @@ const getMetaData = async (req, res) => {
       // Fetch the tweet metadata
       const tweetMetadata = await fetchTweetMetadata(oEmbedUrl);
       let tweetData = await scrapeTweetContent(tweetMetadata.html);
-      console.log("tweetMetadata", tweetMetadata, tweetData);
       const metadata = {
         description: tweetData.tweetContent,
         images: tweetData.imageLinks,
@@ -177,13 +174,14 @@ const getMetaData = async (req, res) => {
     }); 
   }
   } catch (error: any) {
-    console.log(error);
+   if (!res.headersSent) {
     return res.status(500).json({
       data: {},
       success: false,
       message: "Not able to get the metadata",
       err: error.message,
     });
+   } 
   }
 };
 function scrapeTweetContent(html) {
