@@ -21,7 +21,7 @@ ENV NEW_RELIC_APP_NAME="linkcollectprodserverbackend"
 RUN npm i 
 
 # Install PM2 globally - prod
-# RUN npm i pm2 -g
+RUN npm i pm2 -g
 
 # Copy source code - for prod
 # COPY build/src ./src
@@ -29,8 +29,11 @@ RUN npm i
 # Copy everything
 COPY  . .
 
+RUN NODE_OPTIONS=--max-old-space-size=8192 && npm run build
+
+
 # Start the app using PM2, this will be used in production
-# CMD ["pm2-runtime", "start", "src/app.js", "--name", "my-app"]
+CMD ["pm2-runtime", "start", "build/src/app.js", "--name", "linkcollect"]
 
 # for development purpose only
 

@@ -12,11 +12,11 @@ services:
         - ./src:/app/src
         - ./nodemon.json:/app/nodemon.json
         ports:
-            - "3000:7000" 
+            - "3001:3001" 
         networks:
             - example-net
         restart: unless-stopped
-        command: npm run dev
+        # command: 
     nginx:
         build:
             context: .

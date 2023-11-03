@@ -30,3 +30,4 @@ nginx -s reload
 
 # run this inside nginx to get ssh access
 # certbot --nginx  -d backup.linkcollect.io --email harshsingh.eth@gmail.com --rsa-key-size 4096 --agree-tos --force-renewal --non-interactive
+certbot --nginx  -d api.linkcollect.io --email harshsingh.eth@gmail.com --rsa-key-size 4096 --agree-tos --force-renewal --non-interactive
