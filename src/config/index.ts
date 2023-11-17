@@ -21,6 +21,11 @@ const CLIENT_ID_NodeMailer = process.env.client_id_NodeMailer;
 const CLIENT_SECRET_NodeMailer = process.env.client_secret_NodeMailer;
 const REFRESH_TOKEN = process.env.refresh_token;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const LS_SIGNATURE_SECRET = process.env.LS_SIGNATURE_SECRET;
+const LS_API_KEY = process.env.LS_API_KEY;
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+const isS3 = process.env.isS3 ? process.env.isS3 : false;
 
 const config = {
   GOOGLECLIENTID,
@@ -43,6 +48,11 @@ const config = {
   CLIENT_SECRET_NodeMailer,
   REFRESH_TOKEN,
   STRIPE_SECRET_KEY,
+  LS_SIGNATURE_SECRET,
+  LS_API_KEY,
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+  isS3,
 };
 
 

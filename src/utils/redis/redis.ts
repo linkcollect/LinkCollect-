@@ -1,18 +1,23 @@
 
-// import { createClient } from 'redis';
+import { createClient } from 'redis';
 
 // function to store 
 
-let redisClient: any;
+let redisClient: any = null;
 
 async function createRedisClient() {
 
 
-//    redisClient = createClient();
-//    redisClient.on('error', err => console.log('Redis Client Error', err));
+   redisClient = createClient();
+   redisClient.on('error', err => { 
+      redisClient = null;
+    
+   });
    
-//    await redisClient.connect();
-//    console.log('Redis Client Connected');
+   await redisClient.connect();
+   redisClient.on('ready', () => {
+      console.log('Redis Client Connected');
+   });
 }
 
 

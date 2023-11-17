@@ -1,5 +1,5 @@
 # Base stage
-FROM node:alpine as base
+FROM node:18.0.0-alpine3.15 as base
 
 # Set the working directory
 WORKDIR /app
@@ -11,10 +11,17 @@ COPY package*.json ./
 COPY .env ./
 
 # Install dependencies
+#testing stuff start
+ENV NEW_RELIC_NO_CONFIG_FILE=true
+ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true 
+#NEW_RELIC_LOG=stdout
+ENV NEW_RELIC_LICENSE_KEY=42bf836ce95c8d892206b7ae579723daFFFFNRAL
+ENV NEW_RELIC_APP_NAME="linkcollectprodserverbackend"
+# end
 RUN npm i 
 
 # Install PM2 globally - prod
-# RUN npm i pm2 -g
+RUN npm i pm2 -g
 
 # Copy source code - for prod
 # COPY build/src ./src
@@ -22,15 +29,15 @@ RUN npm i
 # Copy everything
 COPY  . .
 
+RUN NODE_OPTIONS=--max-old-space-size=8192 && npm run build
+
+
 # Start the app using PM2, this will be used in production
-# CMD ["pm2-runtime", "start", "src/app.js", "--name", "my-app"]
+CMD ["pm2-runtime", "start", "build/src/app.js", "--name", "linkcollect"]
 
 # for development purpose only
 
 FROM base as production
-
-# Install PM2 globally - prod
-RUN npm i pm2 -g
 
 
 ENV NODE_PATH=./build

@@ -1,0 +1,41 @@
+
+version: '3.9'
+
+services:
+    ts-node-docker:
+        container_name: ts-node-docker
+        build:
+            context: .
+            dockerfile: ./images/nodejs.dockerfile
+            target: base
+        volumes:
+        - ./src:/app/src
+        - ./nodemon.json:/app/nodemon.json
+        ports:
+            - "3001:3001" 
+        networks:
+            - example-net
+        restart: unless-stopped
+        # command: 
+    nginx:
+        build:
+            context: .
+            dockerfile: ./images/nginx.dockerfile
+            target: base
+        container_name: nginx
+        hostname: nginx
+        restart: unless-stopped
+        ports:
+        - "80:80" 
+        - "443:443" 
+        depends_on:
+            - ts-node-docker
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+        networks:
+            - example-net
+
+
+networks:
+  example-net:
+    external: true
+    driver: bridge

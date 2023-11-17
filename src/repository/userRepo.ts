@@ -3,6 +3,7 @@ import deletedUsers from "../models/analytics/deletedUsers";
 import Email from "../utils/sendEmail";
 import { Collection } from "../models/index";
 import checkSpecialCharacters from "middlewares/user/checkSpecialCharacters";
+import { notAllowedUsernames } from "../constants/notAllowedUsernames";
 // import CollectionRepo from "./collectionRepo";
 class UserRepository {
   async create(data) {
@@ -185,16 +186,18 @@ class UserRepository {
 
   async checkUsername(username: String) {
     try {
-      const user = await User.findOne({username: username});
-      console.log("user", user);
-      if (user || username.length < 4) {
+   
+
+      const isInNotAllowedUsernames = notAllowedUsernames.includes(username.toLowerCase());
+
+      const user = await User.findOne({ username: username });
+      if (user || username.length < 4 || isInNotAllowedUsernames) {
         return false;
       } else {
         return true;
       }
     } catch (error) {
-      console.log("Something went wrong in fetching the user", error);
-      console.log(error);
+      console.log("Something went wrong in changeing settings of the user", error);
       throw error;
     }
   }
@@ -213,12 +216,11 @@ class UserRepository {
   }
   async userInfo(data, userId) {
     try {
-  
       const user = await User.findOne({ _id: userId });
       if (!user) {
         throw new Error("User is not available");
       }
-     
+
       // Update user data only for fields that are passed in the 'data' object
       if (data.name) {
         user.name = data.name;
@@ -228,16 +230,25 @@ class UserRepository {
         let isUsernameAvailable = await this.checkUsername(data.username);
         const specialChars = data.username.match(/[^A-Za-z0-9\s.]/g);
 
-        if (specialChars !== null) {   
+        if (specialChars !== null) {
           throw new Error("Username contained special characters!");
-        }  
+        }
 
         if (!isUsernameAvailable) {
           throw new Error("Username is not available");
         }
-        
-        if(isUsernameAvailable) {
-        user.username = data.username;
+
+        if (isUsernameAvailable) {
+          user.username = data.username;
+          // find all collections and update the username
+          let collections = await Collection.find({ userId: userId });
+
+          if (collections) {
+            collections.forEach(async (collection) => {
+              collection.username = data.username;
+              await collection.save();
+            });
+          }
         }
       }
 
@@ -260,7 +271,6 @@ class UserRepository {
       await user.save();
 
       return user;
-
     } catch (error) {
       console.log("Something went wrong in fetching the user", error);
       console.log(error);
@@ -284,17 +294,21 @@ class UserRepository {
         throw new Error("No data provided");
       }
 
-      let usersUpdated: any = []
+      let usersUpdated: any = [];
 
       console.log("here");
       for (let i = 0; i < data.list.length; i++) {
         let user2 = await User.findOne({ username: data.list[i].username });
-        if (!user2 || data.list[i].premium == null || data.list[i].premium == undefined) {
+        if (
+          !user2 ||
+          data.list[i].premium == null ||
+          data.list[i].premium == undefined
+        ) {
           continue;
         }
         user2.isPremium = data.list[i].premium;
         await user2.save();
-        usersUpdated.push(user2)
+        usersUpdated.push(user2);
       }
 
       return usersUpdated;

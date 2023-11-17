@@ -95,7 +95,8 @@ const signIn = async (req, res) => {
 
 const getByUserId = async (req, res) => {
   try {
-    const response = await userService.getUserById(req.params.id);
+    
+    const response = await userService.getUserById(req.params.id, req.userId);
     return res.status(201).json({
       message: "Successfully fetched the user",
       data: response,
@@ -258,12 +259,12 @@ const userInfo = async (req: any, res) => {
       message: "Successfully Updated User details",
       err: {},
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       data: {},
       success: false,
       message: "Not able to Update  User details",
-      err: error,
+      err: error.toString(),
     });
   }
 };
@@ -282,12 +283,12 @@ const setPremium = async (req, res) => {
       message: "Successfully Updated prem vals",
       err: {},
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(500).json({
       data: {},
       success: false,
       message: "Not able to change prem vals",
-      err: error,
+      err: error.toString(),
     });
   }
 };
@@ -317,7 +318,7 @@ const deleteUser = async (req, res) => {
       message: error.message,
       data: {},
       success: false,
-      err: error,
+      err: error.toString(),
     });
   }
 };

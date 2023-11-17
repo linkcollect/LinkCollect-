@@ -251,7 +251,6 @@ class UserService {
       if (!user) {
         throw { error: "No user with the corresponding token exists!" };
       }
-      console.log("->", user);
       return user.id;
     } catch (error) {
       console.log("Something went wrong in the auth process");
@@ -295,11 +294,12 @@ class UserService {
       throw error;
     }
   }
-  async getUserById(userId) {
+  async getUserById(userId, currentUserId) {
     try {
-      console.log(userId);
-      const response = await this.userRepository.getByUserId(userId);
-      return response;
+      
+        const user = await this.userRepository.getByUserId(userId);        
+        return await this.getByUsername(user.username, currentUserId);
+  
     } catch (error) {
       console.log("Something went wrong in service layer!");
       throw error;
@@ -325,38 +325,50 @@ class UserService {
   }
   async getByUsername(username, userId) {
     try {
-      console.log(username, userId);
-      const validUserId = mongoose.isValidObjectId(userId);
-      if (!validUserId) {
-        console.log("userService.getByUsername says userid its null");
-      }
-      if (validUserId) {
-        const user = await this.userRepository.getByUserId(userId);
-        var isSameUser = user.username === username;
-      } else {
-        isSameUser = false;
-      }
+      const user = await this.userRepository.getByUserId(userId);
       const response = await this.userRepository.getByUsername(username);
-      delete response.password;
-      delete response.emailToken;
-      console.log("isSameUser", isSameUser);
-      if (isSameUser) {
-        return response;
-      } else {
-        const collection: any = [];
-        for (let i = 0; i < response.collections.length; i++) {
-          if (response.collections[i].isPublic) {
-            collection.push(response.collections[i]);
-          }
-        }
-        response.collections = collection;
+      const validUserId = mongoose.isValidObjectId(userId);
+      var isSameUser = false;
+  
+      if (validUserId) {
+        isSameUser = user?.username === username;
+      }
+
+      if(response.isPublic === false && !isSameUser) {
+          // Remove sensitive data
+          delete response.password;
+          delete response.emailToken;
+          delete response.email;
+
+          response.collections = [];
+          return response;
+      }
+  
+      // If userId is not null but not equal to the username
+      if (!isSameUser || !validUserId || !user) {
+  
+        // Remove sensitive data
+        delete response.password;
+        delete response.emailToken;
+        delete response.email;
+  
+        // Filter public collections
+        const publicCollections = response.collections.filter(
+          (collection) => collection.isPublic
+        );
+        response.collections = publicCollections;
+  
         return response;
       }
+  
+      // If userId matches the username, return plain response without modification
+      return response;
     } catch (error) {
-      console.log("Something went wrong in service layer!");
+      console.log("Something went wrong in service layer!", error);
       throw error;
     }
   }
+  
 }
 
 export default UserService;

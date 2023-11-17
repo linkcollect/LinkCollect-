@@ -15,6 +15,7 @@ interface ICollection extends Document {
   tags: string[];
   views?: number;
   timelines: mongoose.Schema.Types.ObjectId[];
+  collections: mongoose.Schema.Types.ObjectId[];
 }
 
 const CollectionSchema: Schema<ICollection> = new Schema(
@@ -36,22 +37,21 @@ const CollectionSchema: Schema<ICollection> = new Schema(
     },
     isPinned: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isDuplicate: {
       val: {
         type: Boolean,
-        default: false
+        default: false,
       },
-      originalId: 
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Users",
-        },
+      originalId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+      },
     },
     pinnedTime: {
       type: Date,
-      default: null
+      default: null,
     },
     upvotes: [
       {
@@ -83,15 +83,19 @@ const CollectionSchema: Schema<ICollection> = new Schema(
         ref: "Timeline",
       },
     ],
+    collections: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Collection",
+      },
+    ],
   },
   { timestamps: true }
 );
 
+// For the Collection collection
+// CollectionSchema.index({ title: "text", tags: "text" });
 
-  // For the Collection collection
-  // CollectionSchema.index({ title: "text", tags: "text" });
-
-   
 CollectionSchema.pre<ICollection>("save", function (next) {
   if (this.timelines.length > 100) {
     const err = new Error("Too many Links");
@@ -99,8 +103,6 @@ CollectionSchema.pre<ICollection>("save", function (next) {
   }
   next();
 });
-
-
 
 const Collection = mongoose.model<ICollection>("Collection", CollectionSchema);
 

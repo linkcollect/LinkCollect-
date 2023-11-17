@@ -1,3 +1,4 @@
+require('newrelic');
 import bodyParser from "body-parser";
 import express from "express";
 import env from "./config/index";
@@ -9,6 +10,7 @@ import rateLimit from "express-rate-limit";
 import paymentController from "./controllers/paymentController";
 import http from "http";
 import cron from 'node-cron';
+import crypto from 'crypto';
 import cronSchedule from "./utils/cron-jobs/cronJobs";
 const app = express();
 
@@ -16,7 +18,7 @@ const app = express();
 import { Server, Socket } from "socket.io";
 // socket io imports
 import {ConnectSocketIo} from "./events/io"
-// import {createRedisClient} from './utils/redis/redis'
+import {createRedisClient} from './utils/redis/redis'
 
 const setUpAndStartServer = async () => {
 
@@ -30,7 +32,13 @@ const setUpAndStartServer = async () => {
     paymentController.webhook
   );
 
-  app.use(bodyParser.json());
+  // app.use(bodyParser.json());
+  app.use(bodyParser.json({
+    verify: function(req: any, res, buf, encoding) {
+        // get rawBody        
+        req.rawBody = buf.toString();
+    }
+}));
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(decryptUser);
 
@@ -57,24 +65,24 @@ const setUpAndStartServer = async () => {
     console.log(`Server Started at ${env.PORT}`);
   });
 
-  const io = new Server(server, {
-    cors: {
-      origin: "*",
-      // origin: "https://linkcollect.io", // production
-    },
-  });
+  // const io = new Server(server, {
+  //   cors: {
+  //     origin: "*",
+  //     // origin: "https://linkcollect.io", // production
+  //   },
+  // });
 
-  const onConnection = (socket) => {
-    console.log("here")
-    ConnectSocketIo(io, socket);
+  // const onConnection = (socket) => {
+  //   console.log("here")
+  //   ConnectSocketIo(io, socket);
 
-  }
+  // }
 
-  io.on("connection", onConnection);
+  // io.on("connection", onConnection);
 
   // schedule tasks to be run on the server
   //  cronSchedule(cron);
-  //  await createRedisClient()
+   await createRedisClient()
 
 
 }; 

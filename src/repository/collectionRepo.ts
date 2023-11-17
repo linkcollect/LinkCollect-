@@ -589,6 +589,7 @@ class CollectionRepo {
       const collection = await Collection.findById(id).populate({
         path: "timelines",
       });
+      
       if(!collection) {
         throw "Collection not found"
       }
@@ -597,6 +598,12 @@ class CollectionRepo {
         return collection;
       }
       collection.username = user.username;
+      collection.save();
+
+      // if(user.isPublic === false ) { 
+      //   return "User is private";
+      // }
+
       return collection;
     } catch (error) {
       console.log("Something went wrong at collection repository layer", error);

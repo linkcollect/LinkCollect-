@@ -8,7 +8,7 @@ interface AuthenticatedRequest extends Request {
   userId?: string;
   username?: string;
   ownsUsername?: string;
-  file?: Express.Multer.File;
+  file?: any;
 }
 
 const collectionService = new CollectionService();
@@ -16,7 +16,7 @@ const collectionService = new CollectionService();
 const create = async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (req.file) {
-      req.body.image = req.file.path;
+      req.body.image = req.file.path ? req.file.path : req.file.location;
     }
     const { username, userId } = req;
     const collection = await collectionService.create({
@@ -252,7 +252,7 @@ const deleteCollection = async (req: AuthenticatedRequest, res: Response) => {
 const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (req.file) {
-      req.body.image = req.file.path;
+      req.body.image = req.file.path ? req.file.path : req.file.location;
     }
     const collection = await collectionService.update(req.params.id, req.body);
 
